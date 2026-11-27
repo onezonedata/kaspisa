@@ -27,3 +27,5 @@ make up      # Postgres и Redis в docker compose
 make lint    # ruff, mypy, eslint, tsc
 make test    # pytest и vitest
 ```
+
+проверка после добавления правила Actions
