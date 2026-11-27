@@ -1,0 +1,151 @@
+/* Токены дизайна (ADR 0035). Только переменные: литералы цветов живут здесь и нигде больше.
+   Светлая тема — по умолчанию; тёмная включается атрибутом data-theme="dark" или системной темой,
+   если атрибут не стоит "light". Два тёмных блока одинаковы (это проверяет тест). */
+
+:root {
+  color-scheme: light;
+
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --row-selected: #e8eefc;
+  --border: #dde2e8;
+  --border-strong: #cbd2db;
+  --text: #1b2230;
+  --text-muted: #4b5563;
+  --link: #1d4ed8;
+  --accent: #047857;
+  --on-accent: #ffffff;
+  --focus: #1d4ed8;
+
+  --tone-first: #1d4ed8;
+  --tone-pending: #4b5563;
+  --tone-nobounds: #9c4a06;
+  --tone-untracked: #5b6472;
+  --tone-problem: #7f1d1d;
+
+  --bulk-bg: #e0e7ff;
+  --bulk-text: #1e3a8a;
+  --danger-bg: #fef2f2;
+  --danger-text: #991b1b;
+  --warn-bg: #fffbeb;
+  --warn-text: #92400e;
+  --info-bg: #eff6ff;
+  --info-text: #1e40af;
+
+  /* Меню, подсказка и подложка одинаковы в обеих темах. */
+  --side-bg: #111827;
+  --side-card: #1f2937;
+  --side-active: #374151;
+  --side-active-text: #ffffff;
+  --side-text: #e2e8f0;
+  --side-muted: #9ca3af;
+  --mode-off: #cbd5e1;
+  --mode-dry: #fcd34d;
+  --mode-live: #6ee7b7;
+  --mode-halted: #fca5a5;
+  --tooltip-bg: #1f2937;
+  --tooltip-text: #ffffff;
+  --backdrop: rgb(0 0 0 / 0.45);
+
+  /* Не цвета: шрифты, размеры, отступы, радиусы, тени. */
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-base: 13px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  --radius-sm: 6px;
+  --radius: 8px;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-drawer: 0 8px 24px rgb(0 0 0 / 0.35);
+
+  --control-h: 34px;
+  --row-h: 36px;
+  --sidebar-w: 220px;
+  --sidebar-w-collapsed: 56px;
+  --touch: 44px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0f141b;
+  --surface: #161c25;
+  --surface-2: #1d2530;
+  --row-selected: #1c2a44;
+  --border: #2a3340;
+  --border-strong: #3a4555;
+  --text: #e6eaf0;
+  --text-muted: #a3adbb;
+  --link: #93c5fd;
+  --accent: #34d399;
+  --on-accent: #052e1f;
+  --focus: #93c5fd;
+
+  --tone-first: #93c5fd;
+  --tone-pending: #a3adbb;
+  --tone-nobounds: #fbbf24;
+  --tone-untracked: #949eac;
+  --tone-problem: #f87171;
+
+  --bulk-bg: #1e2a4a;
+  --bulk-text: #c7d2fe;
+  --danger-bg: #3b1219;
+  --danger-text: #fecaca;
+  --warn-bg: #3a2a0a;
+  --warn-text: #fde68a;
+  --info-bg: #11233f;
+  --info-text: #bfdbfe;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #0f141b;
+    --surface: #161c25;
+    --surface-2: #1d2530;
+    --row-selected: #1c2a44;
+    --border: #2a3340;
+    --border-strong: #3a4555;
+    --text: #e6eaf0;
+    --text-muted: #a3adbb;
+    --link: #93c5fd;
+    --accent: #34d399;
+    --on-accent: #052e1f;
+    --focus: #93c5fd;
+
+    --tone-first: #93c5fd;
+    --tone-pending: #a3adbb;
+    --tone-nobounds: #fbbf24;
+    --tone-untracked: #949eac;
+    --tone-problem: #f87171;
+
+    --bulk-bg: #1e2a4a;
+    --bulk-text: #c7d2fe;
+    --danger-bg: #3b1219;
+    --danger-text: #fecaca;
+    --warn-bg: #3a2a0a;
+    --warn-text: #fde68a;
+    --info-bg: #11233f;
+    --info-text: #bfdbfe;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --fs-base: 15px;
+    --control-h: 44px;
+  }
+}

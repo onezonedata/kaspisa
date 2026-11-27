@@ -1,0 +1,52 @@
+{
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Bash(docker compose -f docker-compose.prod.yml ps:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)"
+    ],
+    "ask": [
+      "Bash(bash update.sh:*)",
+      "Bash(sudo:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./backend/.env)",
+      "Read(./frontend/.env.local)",
+      "Read(./backups/*.dump)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Bash(make show-key:*)",
+      "Bash(python -m kaspisa.api.add_user:*)",
+      "Bash(python -m kaspisa.api.reset_token:*)",
+      "Bash(docker inspect:*)",
+      "Bash(docker compose config:*)",
+      "Bash(docker compose -f docker-compose.prod.yml config:*)",
+      "Bash(docker compose convert:*)",
+      "Bash(docker compose -f docker-compose.prod.yml convert:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker compose exec:*)",
+      "Bash(docker compose -f docker-compose.prod.yml exec:*)",
+      "Bash(env)",
+      "Bash(printenv:*)",
+      "Bash(cat .env:*)",
+      "Bash(make restore:*)",
+      "Bash(bash deploy/restore.sh:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/kaspisa-guard.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "merchantUid": "90100003",
+  "availabilities": [
+    {"available": "yes", "storeId": "90100003_PP3", "stockCount": 0},
+    {"available": "yes", "storeId": "90100003_PP1", "stockCount": 9}
+  ],
+  "cityPrices": [{"cityId": "710000000", "value": 2654}],
+  "sku": "900000005_900000024",
+  "model": "Тестовый товар 1"
+}

@@ -1,0 +1,114 @@
+{
+ "_comment": "Один товар 2026-11-14: строка списка (сокращена до нужных полей), чтение и запись, которую отправил кабинет.",
+ "listRequestBody": {
+  "searchTerm": "900000005_900000024",
+  "available": true
+ },
+ "listRow": {
+  "sku": "900000005_900000024",
+  "masterSku": "900000005",
+  "merchantUid": "90100003",
+  "model": "Тестовый товар 1",
+  "title": "Тестовый товар 1",
+  "masterTitle": "Тестовый товар 1, карточка",
+  "available": true,
+  "archivedAt": null,
+  "offerId": "9f0000000000000000000001",
+  "fileId": "MANUAL_CHANGES",
+  "updatedAt": "2026-11-14T08:37:26.170889149Z",
+  "availabilities": [
+   {
+    "available": "yes",
+    "preOrder": 0,
+    "stockCount": null,
+    "stockSpecified": false,
+    "storeId": "90100003_PP1"
+   }
+  ],
+  "cityPrices": [
+   {
+    "cityId": "710000000",
+    "oldprice": 0,
+    "value": 2998
+   }
+  ],
+  "points": [
+   "PP1"
+  ],
+  "stocks": [
+   {
+    "cityId": "710000000",
+    "stockLevel": {
+     "90100003_PP1": {
+      "enabled": false,
+      "value": null
+     }
+    }
+   }
+  ],
+  "minPrice": 2998,
+  "maxPrice": 2998,
+  "shopLink": "/p/brand-a-gel-dlya-stirki-4-l-900000005/"
+ },
+ "editPrice": {
+  "available": true,
+  "sku": "900000005_900000024",
+  "masterSku": "900000005",
+  "minPrice": 2998,
+  "maxPrice": 2998,
+  "title": "Тестовый товар 1",
+  "masterTitle": "Тестовый товар 1, карточка",
+  "brand": "Бренд 1",
+  "cities": [
+   {
+    "id": "710000000",
+    "name": "Астана",
+    "price": 2998,
+    "points": [
+     {
+      "id": "90100003_PP3",
+      "address": " улица Тестовая,  1",
+      "displayName": "PP3",
+      "stock": 0
+     },
+     {
+      "id": "90100003_PP1",
+      "address": null,
+      "displayName": "PP1",
+      "stock": null
+     }
+    ]
+   }
+  ],
+  "image": "https://resources.cdn-kaspi.kz/img/m/p/p90/p90/900000001.jpeg?format=gallery-small",
+  "unitCode": "pieces"
+ },
+ "priceUpdateRequest": {
+  "merchantUid": "90100003",
+  "availabilities": [
+   {
+    "available": "yes",
+    "storeId": "90100003_PP3",
+    "stockCount": 0
+   },
+   {
+    "available": "yes",
+    "storeId": "90100003_PP1"
+   }
+  ],
+  "cityPrices": [
+   {
+    "cityId": "710000000",
+    "value": 2998
+   }
+  ],
+  "sku": "900000005_900000024",
+  "model": "Тестовый товар 1"
+ },
+ "priceUpdateResponse": {
+  "status": 200,
+  "body": {
+   "id": "9f0000000000000000000004"
+  }
+ }
+}

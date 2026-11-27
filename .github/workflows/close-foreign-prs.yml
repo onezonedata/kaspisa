@@ -1,0 +1,21 @@
+name: Close pull requests
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  close:
+    if: ${{ !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) && (github.event.action == 'opened' || github.event.sender.login == github.event.pull_request.user.login) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Close the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr close "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --comment "Это зеркало: pull request сюда не принимаются и закрываются автоматически. Ошибки и предложения пишите в Issues: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/issues"

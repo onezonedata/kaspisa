@@ -1,0 +1,180 @@
+# kaspisa у владельца (ADR 0022, 0023). Режим — COMPOSE_PROFILES=local|tunnel|public в .env.
+# Образы: ${KASPISA_IMAGE_PREFIX:-local}/kaspisa-{backend,web}:${KASPISA_VERSION}. Сборка — только
+# явным `docker compose build`; остальные команды идут с --no-build.
+name: kaspisa-prod
+
+x-backend: &backend
+  image: ${KASPISA_IMAGE_PREFIX:-local}/kaspisa-backend:${KASPISA_VERSION:?}
+  build:
+    context: ./backend
+
+services:
+  db:
+    image: postgres:17
+    command: ["postgres", "-c", "log_error_verbosity=terse"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      # Образ создаёт базу и выполняет в ней всё из initdb.d: 10-roles.sql, затем grants.sql.
+      POSTGRES_DB: kaspisa
+      KASPISA_DB_OWNER_PASSWORD: ${KASPISA_DB_OWNER_PASSWORD:?}
+      KASPISA_DB_APP_PASSWORD: ${KASPISA_DB_APP_PASSWORD:?}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kaspisa -d kaspisa"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *backend
+    command: ["alembic", "-c", "alembic/alembic.ini", "upgrade", "head"]
+    restart: "no"
+    environment:
+      KASPISA_DATABASE_URL: postgresql+asyncpg://kaspisa:${KASPISA_DB_OWNER_PASSWORD:?}@db:5432/kaspisa
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *backend
+    command: ["sh", "docker/start-api.sh"]
+    restart: unless-stopped
+    stop_grace_period: 300s
+    networks: [default, app, edge]
+    environment:
+      KASPISA_MODE: ${COMPOSE_PROFILES:?}
+      KASPISA_EDGE_SUBNET: ${KASPISA_EDGE_SUBNET:-172.29.247.0/29}
+      KASPISA_DATABASE_URL: postgresql+asyncpg://kaspisa_app:${KASPISA_DB_APP_PASSWORD:?}@db:5432/kaspisa
+      KASPISA_REDIS_URL: redis://redis:6379/0
+      KASPISA_ENCRYPTION_KEY: ${KASPISA_ENCRYPTION_KEY:?}
+      KASPISA_ENCRYPTION_OLD_KEYS: ${KASPISA_ENCRYPTION_OLD_KEYS:-}
+      KASPISA_COOKIE_SECURE: ${KASPISA_COOKIE_SECURE:?}
+      KASPISA_UPDATE_REPO: ${KASPISA_UPDATE_REPO:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).status == 200 else 1)"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  worker:
+    <<: *backend
+    command: ["python", "-m", "kaspisa.worker"]
+    restart: unless-stopped
+    stop_grace_period: 300s
+    environment:
+      KASPISA_DATABASE_URL: postgresql+asyncpg://kaspisa_app:${KASPISA_DB_APP_PASSWORD:?}@db:5432/kaspisa
+      KASPISA_REDIS_URL: redis://redis:6379/0
+      KASPISA_ENCRYPTION_KEY: ${KASPISA_ENCRYPTION_KEY:?}
+      KASPISA_ENCRYPTION_OLD_KEYS: ${KASPISA_ENCRYPTION_OLD_KEYS:-}
+      KASPISA_DRY_RUN: ${KASPISA_DRY_RUN:?}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  web:
+    image: ${KASPISA_IMAGE_PREFIX:-local}/kaspisa-web:${KASPISA_VERSION:?}
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    # Без сети default: из взломанного web не достать Postgres и Redis (только api и Caddy).
+    networks: [app, front]
+    ports:
+      - "127.0.0.1:${KASPISA_WEB_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/login').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # Копии базы: раз в сутки, ротация, восстановление. Каталог deploy монтируется целиком,
+  # чтобы после git checkout контейнер видел новые скрипты без пересоздания.
+  backup:
+    image: postgres:17
+    command: ["bash", "/opt/kaspisa/deploy/backup.sh", "loop"]
+    restart: unless-stopped
+    user: ${KASPISA_UID:?}:${KASPISA_GID:?}
+    environment:
+      PGHOST: db
+      PGUSER: kaspisa
+      PGDATABASE: kaspisa
+      PGPASSWORD: ${KASPISA_DB_OWNER_PASSWORD:?}
+    volumes:
+      - ./backups:/backups
+      - ./deploy:/opt/kaspisa/deploy:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2
+    profiles: [public]
+    restart: unless-stopped
+    networks: [front, edge]
+    environment:
+      KASPISA_DOMAIN: ${KASPISA_DOMAIN:-}
+      KASPISA_CADDY_TLS: ${KASPISA_CADDY_TLS:-internal}
+    ports:
+      # Только IPv4: при публикации на [::] соединения принимает docker-proxy, и Caddy видел бы у
+      # всех IPv6-клиентов адрес шлюза (общий счётчик неудачных входов). Запись AAAA для домена
+      # не поддерживается.
+      - "0.0.0.0:${KASPISA_HTTP_PORT:-80}:80"
+      - "0.0.0.0:${KASPISA_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./deploy/caddy:/etc/caddy:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+
+networks:
+  default: {}
+  # web <-> api: единственная связь web с серверной частью.
+  app: {}
+  # Caddy и api. Доверие к X-Forwarded-For держится на том, что в этой подсети больше никого нет.
+  front: {}
+  edge:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${KASPISA_EDGE_SUBNET:-172.29.247.0/29}
+
+volumes:
+  pgdata:
+  redisdata:
+  caddy_data:
+  caddy_config:

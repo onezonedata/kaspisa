@@ -1,0 +1,1089 @@
+/* База и общие компоненты (ADR 0035). Цвета, шрифты, тени и радиусы — только из tokens.css. */
+
+/* --- 1. База элементов --- */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.45;
+}
+
+main {
+  padding: var(--space-4) var(--space-6);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 var(--space-3);
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: var(--fs-xl);
+}
+
+h2 {
+  font-size: var(--fs-lg);
+}
+
+h3 {
+  font-size: var(--fs-base);
+}
+
+p {
+  margin: 0 0 var(--space-3);
+}
+
+a {
+  color: var(--link);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+legend {
+  padding: 0 var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+input,
+select,
+textarea {
+  min-height: var(--control-h);
+  padding: 5px var(--space-2);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  min-height: 0;
+  accent-color: var(--accent);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+button {
+  min-height: var(--control-h);
+  padding: 5px var(--space-3);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+button[type="submit"] {
+  color: var(--on-accent);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 500;
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button.btn-danger {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border-color: var(--danger-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* --- 2. Каркас: боковое меню, верхняя полоса телефона --- */
+
+.loading {
+  padding: var(--space-6);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.shell {
+  display: flex;
+  align-items: flex-start;
+}
+
+.shell-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.shell-content > .banner {
+  margin: var(--space-3) var(--space-6) 0;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: var(--sidebar-w);
+  height: 100dvh;
+  padding: var(--space-3);
+  overflow-y: auto;
+  color: var(--side-text);
+  background: var(--side-bg);
+}
+
+.sidebar a {
+  color: var(--side-text);
+  text-decoration: none;
+}
+
+.sidebar :focus-visible,
+.topbar :focus-visible {
+  outline-color: var(--side-text);
+}
+
+.side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-1) var(--space-2);
+}
+
+.side-brand {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+
+.side-shop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--side-card);
+  border-radius: var(--radius);
+}
+
+.side-shop-title,
+.side-email {
+  color: var(--side-muted);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.side-email {
+  overflow: hidden;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-sm);
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  text-transform: none;
+}
+
+.side-shop-uid {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.side-shop-mode {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--mode-off);
+  font-size: var(--fs-sm);
+}
+
+[data-mode="dry_run"] > .side-shop-mode,
+.topbar-mode[data-mode="dry_run"] {
+  color: var(--mode-dry);
+}
+
+[data-mode="live"] > .side-shop-mode,
+.topbar-mode[data-mode="live"] {
+  color: var(--mode-live);
+}
+
+[data-mode="halted"] > .side-shop-mode,
+.topbar-mode[data-mode="halted"] {
+  color: var(--mode-halted);
+}
+
+.mode-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+/* Режим различается формой, не только цветом: пробный — кольцо, рабочий — круг, остановка — квадрат, выключен — чёрточка. */
+[data-mode="dry_run"] .mode-dot {
+  box-sizing: border-box;
+  background: transparent;
+  border: 2px solid currentColor;
+}
+
+[data-mode="halted"] .mode-dot {
+  border-radius: 1px;
+}
+
+/* Выключен — чёрточка вместо круга. */
+[data-mode="off"] .mode-dot {
+  height: 2px;
+  border-radius: 1px;
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.side-nav a,
+.sidebar .side-btn,
+.topbar-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--control-h);
+  padding: 5px var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+.sidebar .side-btn,
+.topbar-btn {
+  color: var(--side-text);
+  background: transparent;
+  border-color: transparent;
+  text-align: left;
+}
+
+.side-nav a:hover,
+.sidebar .side-btn:hover:not(:disabled),
+.topbar-btn:hover:not(:disabled) {
+  background: var(--side-card);
+}
+
+.side-nav a[aria-current="page"],
+.sidebar .side-btn[aria-pressed="true"] {
+  color: var(--side-active-text);
+  background: var(--side-active);
+}
+
+.side-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+}
+
+.side-foot .error {
+  padding: 0 var(--space-3);
+  color: var(--mode-halted);
+}
+
+.topbar {
+  display: none;
+}
+
+.sidebar .side-close {
+  display: none;
+  width: auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  color: var(--side-text);
+  background: var(--side-bg);
+}
+
+.topbar-btn {
+  width: auto;
+}
+
+.topbar-mode {
+  display: flex;
+  margin-left: auto;
+}
+
+.backdrop {
+  display: none;
+}
+
+.source-footer {
+  padding: var(--space-4) var(--space-6);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.side-plain svg {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  /* Подпись остаётся в доступном имени, но не занимает места; на телефоне свёрнутость не действует. */
+  :root[data-sidebar="collapsed"] .sidebar .nav-label,
+  :root[data-sidebar="collapsed"] .sidebar .side-shop-title,
+  :root[data-sidebar="collapsed"] .sidebar .side-shop-uid,
+  :root[data-sidebar="collapsed"] .sidebar .mode-text,
+  :root[data-sidebar="collapsed"] .sidebar .side-email {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  :root[data-sidebar="collapsed"] .sidebar {
+    width: var(--sidebar-w-collapsed);
+    padding-inline: var(--space-2);
+    /* Не обрезать подсказки, которые выходят за правый край узкой полосы. */
+    overflow: visible;
+  }
+
+  :root[data-sidebar="collapsed"] .side-head {
+    justify-content: center;
+    padding: 0;
+  }
+
+  :root[data-sidebar="collapsed"] .side-brand {
+    font-size: var(--fs-base);
+  }
+
+  :root[data-sidebar="collapsed"] .sidebar .side-shop {
+    align-items: center;
+    padding: var(--space-2);
+  }
+
+  :root[data-sidebar="collapsed"] .side-nav a,
+  :root[data-sidebar="collapsed"] .sidebar .side-btn {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  :root[data-sidebar="collapsed"] .side-collapse svg {
+    transform: rotate(180deg);
+  }
+
+  /* У «Выйти на всех устройствах» значок виден только в свёрнутом меню. */
+  :root[data-sidebar="collapsed"] .side-plain svg {
+    display: block;
+  }
+
+  /* Подсказка: подпись показывается справа при наведении и при фокусе с клавиатуры. */
+  :root[data-sidebar="collapsed"] .side-nav a:hover .nav-label,
+  :root[data-sidebar="collapsed"] .side-nav a:focus-visible .nav-label,
+  :root[data-sidebar="collapsed"] .sidebar .side-btn:hover .nav-label,
+  :root[data-sidebar="collapsed"] .sidebar .side-btn:focus-visible .nav-label,
+  :root[data-sidebar="collapsed"] .sidebar .side-shop:hover .mode-text {
+    top: 50%;
+    left: calc(100% + var(--space-2));
+    z-index: 30;
+    width: auto;
+    height: auto;
+    padding: var(--space-1) var(--space-2);
+    overflow: visible;
+    color: var(--tooltip-text);
+    background: var(--tooltip-bg);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-drawer);
+    clip-path: none;
+    transform: translateY(-50%);
+  }
+
+  .sidebar .side-shop {
+    position: relative;
+  }
+}
+
+/* --- 3. Общие компоненты --- */
+
+.card {
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.error {
+  color: var(--danger-text);
+}
+
+.warn {
+  color: var(--warn-text);
+}
+
+.banner {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.banner.tone-danger {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+}
+
+.banner.tone-warn {
+  color: var(--warn-text);
+  background: var(--warn-bg);
+}
+
+.banner.tone-info {
+  color: var(--info-text);
+  background: var(--info-bg);
+}
+
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  color: var(--bulk-text);
+  background: var(--bulk-bg);
+  border-radius: var(--radius);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.table-scroll table,
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-scroll th,
+.table-scroll td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table-scroll th {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.table-scroll tbody tr {
+  height: var(--row-h);
+}
+
+.table-scroll tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-scroll tr[data-selected="true"] {
+  background: var(--row-selected);
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  /* Пробелы в цене (между группами и перед «₸») в моноширинном шрифте шириной в цифру: сужаем. */
+  word-spacing: -0.4ch;
+}
+
+/* Состояние по смыслу: цвет не единственный носитель, в ячейке всегда текст. */
+[data-tone="first"] {
+  color: var(--tone-first);
+  font-weight: 600;
+}
+
+[data-tone="pending"] {
+  color: var(--tone-pending);
+}
+
+[data-tone="nobounds"] {
+  color: var(--tone-nobounds);
+}
+
+[data-tone="untracked"] {
+  color: var(--tone-untracked);
+  font-style: italic;
+}
+
+[data-tone="problem"] {
+  color: var(--tone-problem);
+  font-weight: 600;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Шапка страницы: заголовок, счётчик и кнопка загрузки каталога в одной строке. */
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.page-head h1 {
+  margin: 0;
+}
+
+.page-head .count {
+  color: var(--text-muted);
+}
+
+.page-head > section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin-left: auto;
+}
+
+.page-head > section p {
+  margin: 0;
+}
+
+.page-head > section small {
+  color: var(--text-muted);
+}
+
+/* Панель поиска и фильтров: переносится по строкам. */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-3) 0;
+}
+
+.toolbar form,
+.toolbar-filters {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.toolbar label {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.toolbar input[type="search"] {
+  min-width: 240px;
+}
+
+.bulk-bar {
+  margin: var(--space-2) 0;
+}
+
+.bulk-bar p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.bulk-bar .bulk-step {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bulk-bar label {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.table-scroll .num {
+  text-align: right;
+}
+
+.table-scroll td.sku {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.table-scroll td.title-cell {
+  max-width: 320px;
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+}
+
+/* Колонки с фразой («Проверка», «Отказ»): перенос внутри узкой колонки, иначе подсказка
+   у товара без границ растягивает таблицу на тысячу пикселей. */
+.table-scroll td.text-cell {
+  /* Без постоянной ширины таблица сжимает колонку до минимума, и строка вырастает в столбик. */
+  width: 36ch;
+  min-width: 36ch;
+  max-width: 36ch;
+  white-space: normal;
+}
+
+.table-scroll td.price {
+  font-weight: 500;
+}
+
+.table-scroll td small {
+  color: var(--text-muted);
+}
+
+.table-scroll td button {
+  min-height: 26px;
+  padding: 2px var(--space-2);
+}
+
+.table-scroll td label.check {
+  display: inline-flex;
+}
+
+/* Чекбокс строки: на телефоне цель касания 44 px (см. раздел «Телефон»). */
+label.hit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.pager p {
+  margin: 0 auto 0 0;
+  color: var(--text-muted);
+}
+
+/* Карточка: отступ снизу, последний элемент без лишнего поля. */
+.card {
+  margin: 0 0 var(--space-3);
+}
+
+.card > :last-child,
+.card section > :last-child,
+.banner > :last-child {
+  margin-bottom: 0;
+}
+
+small {
+  color: var(--text-muted);
+}
+
+.banner small {
+  color: inherit;
+}
+
+form.card > button,
+.card form > button {
+  align-self: flex-start;
+}
+
+/* Ряд кнопок, переносится на узком экране. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Вертикальная стопка с отступами; кнопки не растягиваются, таблица занимает всю ширину. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.stack > .table-scroll {
+  align-self: stretch;
+  max-width: 100%;
+}
+
+.stack > p,
+.stack > .error {
+  margin: 0;
+}
+
+.table-scroll td.wrap {
+  min-width: 200px;
+  white-space: normal;
+}
+
+.sku {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Форма в две колонки на компьютере; на узком экране колонки сами складываются в одну. */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  align-items: start;
+  gap: var(--space-3) var(--space-4);
+}
+
+.form-grid > :not(label:not(.check)) {
+  grid-column: 1 / -1;
+}
+
+.form-grid > p {
+  margin: 0;
+}
+
+/* --- 4. Экраны --- */
+
+/* Страницы кабинета: таблицы на всю ширину, формы и карточки — в читаемой колонке. */
+.page-narrow {
+  max-width: 760px;
+}
+
+.page-medium {
+  max-width: 1000px;
+}
+
+main > nav {
+  margin: 0 0 var(--space-3);
+}
+
+main > button {
+  margin: 0 0 var(--space-3);
+}
+
+main > .error,
+main > p[role="alert"] {
+  margin: 0 0 var(--space-3);
+}
+
+.product-fields {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.product-fields dt {
+  color: var(--text-muted);
+}
+
+.product-fields dd {
+  margin: 0;
+}
+
+.product-fields dd.num {
+  text-align: left;
+}
+
+ol.steps {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-6);
+}
+
+ol.steps li + li {
+  margin-top: var(--space-1);
+}
+
+main.auth {
+  max-width: 400px;
+  margin: var(--space-6) auto;
+  padding: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.auth-brand {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+}
+
+.auth h1 {
+  font-size: var(--fs-lg);
+}
+
+.auth form p {
+  margin: 0;
+}
+
+ul.shop-list {
+  margin: 0 0 var(--space-3);
+  padding: 0 var(--space-4);
+  list-style: none;
+}
+
+ul.shop-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+ul.shop-list li:last-child {
+  border-bottom: 0;
+}
+
+ul.shop-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+}
+
+/* --- 5. Телефон --- */
+
+@media (max-width: 767px) {
+  :root {
+    --fs-base: 15px;
+    --control-h: 44px;
+  }
+
+  main {
+    padding: var(--space-3);
+  }
+
+  .shell {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .shell-content > .banner {
+    margin: var(--space-3) var(--space-3) 0;
+  }
+
+  .topbar {
+    display: flex;
+    min-height: var(--touch);
+  }
+
+  /* Закрытая панель убрана из порядка Tab и из дерева доступности (visibility), а не только сдвинута. */
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(280px, 85vw);
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition:
+      transform 0.2s,
+      visibility 0s linear 0.2s;
+  }
+
+  .shell[data-open="true"] .sidebar {
+    visibility: visible;
+    box-shadow: var(--shadow-drawer);
+    transform: translateX(0);
+    transition:
+      transform 0.2s,
+      visibility 0s;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    display: block;
+    background: var(--backdrop);
+  }
+
+  .backdrop[hidden] {
+    display: none;
+  }
+
+  .sidebar .side-close {
+    display: flex;
+  }
+
+  .sidebar .side-collapse {
+    display: none;
+  }
+
+  .side-nav a,
+  .sidebar .side-btn,
+  .topbar-btn {
+    min-height: var(--touch);
+  }
+
+  .topbar-btn {
+    min-width: var(--touch);
+    justify-content: center;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  label.hit,
+  label.check,
+  .pager button {
+    min-width: var(--touch);
+    min-height: var(--touch);
+  }
+
+  .toolbar input[type="search"] {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .toolbar form,
+  .toolbar-filters {
+    width: 100%;
+  }
+
+  .toolbar form label {
+    flex: 1;
+  }
+
+  .table-scroll td button {
+    min-height: var(--touch);
+  }
+
+  .page-head > section {
+    margin-left: 0;
+  }
+
+  .card {
+    padding: var(--space-3);
+  }
+
+  ol.steps {
+    padding-left: var(--space-6);
+  }
+
+  main.auth {
+    max-width: none;
+    margin: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  /* Ссылки отдельными строками и в карточках — цель касания 44 px. */
+  main > nav a,
+  .auth a,
+  .card a,
+  .banner a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch);
+  }
+
+  /* Ссылка-название в ячейке таблицы остаётся встроенной (WCAG 2.5.8). */
+  .table-scroll a {
+    display: inline;
+    min-height: 0;
+  }
+
+  .actions > button {
+    flex: 1 1 auto;
+  }
+
+  .product-fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .product-fields dd {
+    margin-bottom: var(--space-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none !important;
+  }
+}

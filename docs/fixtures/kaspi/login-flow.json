@@ -1,0 +1,38 @@
+[
+ {
+  "step": "пароль",
+  "method": "POST",
+  "url": "https://idmc.shop.kaspi.kz/api/p/login",
+  "requestHeaders": [
+   "Accept: application/json, text/plain, */*",
+   "Content-Type: application/json"
+  ],
+  "requestBody": {
+   "_u": "***",
+   "_p": "***",
+   "_r_d": false
+  },
+  "status": 200,
+  "responseBody": {
+   "email": "***"
+  }
+ },
+ {
+  "step": "код из письма",
+  "method": "POST",
+  "url": "https://idmc.shop.kaspi.kz/api/p/login",
+  "requestHeaders": [
+   "Accept: application/json, text/plain, */*",
+   "Content-Type: application/json"
+  ],
+  "requestBody": {
+   "_m_c": "***",
+   "_r_d": true,
+   "_u": "***"
+  },
+  "status": 200,
+  "responseBody": {
+   "redirectUrl": "https://idmc.shop.kaspi.kz/oauth2/authorize?response_type=***&client_id=***&scope=***&state=***&redirect_uri=***&nonce=***&code_challenge=***&code_challenge_method=***&continue=***"
+  }
+ }
+]

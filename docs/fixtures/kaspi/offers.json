@@ -1,0 +1,13 @@
+{
+  "offers": [
+    {"masterSku": "900000005", "merchantId": "90100003", "merchantName": "Магазин 1", "price": 2643, "merchantRating": 4.5, "merchantReviewsQuantity": 100, "deliveryType": "TO_DOOR", "kaspiDelivery": true, "preorder": 0},
+    {"masterSku": "900000005", "merchantId": "90100005", "merchantName": "Магазин 2", "price": 2643, "merchantRating": 4.5, "merchantReviewsQuantity": 200, "deliveryType": "TO_DOOR", "kaspiDelivery": true, "preorder": 0},
+    {"masterSku": "900000005", "merchantId": "90100001", "merchantName": "Магазин 3 ", "price": 2998, "merchantRating": 4.5, "merchantReviewsQuantity": 300, "deliveryType": "TO_DOOR", "kaspiDelivery": true, "preorder": 0},
+    {"masterSku": "900000005", "merchantId": "90100004", "merchantName": "Магазин 4", "price": 2998, "merchantRating": 4.5, "merchantReviewsQuantity": 400, "deliveryType": "TO_DOOR", "kaspiDelivery": true, "preorder": 0},
+    {"masterSku": "900000005", "merchantId": "Magazin5", "merchantName": "МАГАЗИН 5", "price": 2999, "merchantRating": 4.4, "merchantReviewsQuantity": 500, "deliveryType": "TO_DOOR", "kaspiDelivery": true, "preorder": 0},
+    {"masterSku": "900000005", "merchantId": "90100006", "merchantName": "ИП Магазин 6", "price": 3500, "merchantRating": 4, "merchantReviewsQuantity": 600, "deliveryType": "TO_DOOR", "kaspiDelivery": true, "preorder": 0},
+    {"masterSku": "900000005", "merchantId": "90100002", "merchantName": "Магазин 7", "price": 4990, "merchantRating": 4.3, "merchantReviewsQuantity": 700, "deliveryType": "TO_DOOR", "kaspiDelivery": true, "preorder": 0}
+  ],
+  "total": 7,
+  "offersCount": 7
+}

@@ -1,0 +1,67 @@
+{
+ "_comment": "Товар с выключенной точкой PP3, 2026-11-14: в строке списка она available=no, в чтении товара неотличима от включённой с остатком 0.",
+ "sku": "900000001_900000021",
+ "listRow": {
+  "availabilities": [
+   {
+    "available": "yes",
+    "preOrder": 0,
+    "stockCount": 24,
+    "stockSpecified": true,
+    "storeId": "90100003_PP1"
+   },
+   {
+    "available": "no",
+    "preOrder": 0,
+    "stockCount": 0,
+    "stockSpecified": true,
+    "storeId": "90100003_PP3"
+   }
+  ],
+  "cityPrices": [
+   {
+    "cityId": "710000000",
+    "oldprice": 0,
+    "value": 1660
+   }
+  ],
+  "points": [
+   "PP1"
+  ],
+  "stocks": [
+   {
+    "cityId": "710000000",
+    "stockLevel": {
+     "90100003_PP1": {
+      "enabled": true,
+      "value": 24
+     }
+    }
+   }
+  ]
+ },
+ "editPrice": {
+  "available": true,
+  "cities": [
+   {
+    "id": "710000000",
+    "name": "Астана",
+    "price": 1660,
+    "points": [
+     {
+      "id": "90100003_PP3",
+      "address": " улица Тестовая,  1",
+      "displayName": "PP3",
+      "stock": 0
+     },
+     {
+      "id": "90100003_PP1",
+      "address": null,
+      "displayName": "PP1",
+      "stock": 24
+     }
+    ]
+   }
+  ]
+ }
+}

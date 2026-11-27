@@ -1,0 +1,31 @@
+# Caddy для режима public (ADR 0023). Каталог монтируется целиком.
+# KASPISA_CADDY_TLS: e-mail владельца (Let's Encrypt) или internal (свой УЦ Caddy, без ACME).
+{
+	# Корневой сертификат внутреннего УЦ в хранилище хоста не ставим.
+	skip_install_trust
+}
+
+{$KASPISA_DOMAIN} {
+	tls {$KASPISA_CADDY_TLS}
+
+	# Журнал запросов в stdout: адрес клиента и путь. Заголовки (cookie) не пишутся.
+	log
+
+	header Strict-Transport-Security "max-age=31536000"
+
+	# Регистрация снаружи закрыта: страница /register и POST /api/auth/register.
+	# Сопоставление идёт по подстроке пути без учёта регистра, чтобы ловить обходы.
+	@register path_regexp (?i)/register
+
+	# Порядок директив задан явно: закрытие регистрации раньше /api/*.
+	route {
+		respond @register 404
+
+		reverse_proxy /api/* api:8000 {
+			# Подменяем присланное клиентом значение адресом, который видит Caddy.
+			header_up X-Forwarded-For {remote_host}
+		}
+
+		reverse_proxy web:3000
+	}
+}

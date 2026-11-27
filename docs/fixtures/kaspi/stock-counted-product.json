@@ -1,0 +1,61 @@
+{
+ "_comment": "Товар с указанным остатком, 2026-11-26 (ADR 0036): в строке списка PP1 — 100, в чтении — 94. Собрано по наблюдению, значения заменены; полный ответ и порядок точек в чтении не сохранены.",
+ "sku": "900000004_900000025",
+ "listRow": {
+  "sku": "900000004_900000025",
+  "masterSku": "900000004",
+  "merchantUid": "90100003",
+  "available": true,
+  "archivedAt": null,
+  "cityPrices": [
+   {
+    "cityId": "710000000",
+    "oldprice": 0,
+    "value": 490
+   }
+  ],
+  "availabilities": [
+   {
+    "available": "yes",
+    "preOrder": 0,
+    "stockCount": 100,
+    "stockSpecified": true,
+    "storeId": "90100003_PP1"
+   },
+   {
+    "available": "no",
+    "preOrder": 0,
+    "stockCount": 0,
+    "stockSpecified": true,
+    "storeId": "90100003_PP3"
+   }
+  ]
+ },
+ "editPrice": {
+  "sku": "900000004_900000025",
+  "masterSku": "900000004",
+  "title": "Тестовый товар 5",
+  "available": true,
+  "cities": [
+   {
+    "id": "710000000",
+    "name": "Астана",
+    "price": 490,
+    "points": [
+     {
+      "id": "90100003_PP3",
+      "address": null,
+      "displayName": "PP3",
+      "stock": 0
+     },
+     {
+      "id": "90100003_PP1",
+      "address": null,
+      "displayName": "PP1",
+      "stock": 94
+     }
+    ]
+   }
+  ]
+ }
+}

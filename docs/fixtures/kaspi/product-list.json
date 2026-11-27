@@ -1,0 +1,347 @@
+{
+ "data": [
+  {
+   "_distinctVersion": 78,
+   "_version": null,
+   "allCityPrices": {
+    "111010000": {
+     "discount": 0,
+     "oldPrice": null,
+     "price": 931
+    },
+    "111037100": {
+     "discount": 0,
+     "oldPrice": null,
+     "price": 931
+    }
+   },
+   "anyKaspiDelivery": true,
+   "anyKaspiDeliveryExpress": false,
+   "anyKaspiDeliveryLocal": false,
+   "anyMerchantDelivery": false,
+   "anyPickup": true,
+   "applicationCode": null,
+   "archivedAt": null,
+   "attributes": [],
+   "availabilities": [
+    {
+     "available": "yes",
+     "preOrder": 0,
+     "stockCount": null,
+     "stockSpecified": false,
+     "storeId": "90100003_PP1"
+    },
+    {
+     "available": "yes",
+     "preOrder": 0,
+     "stockCount": null,
+     "stockSpecified": false,
+     "storeId": "90100003_PP3"
+    }
+   ],
+   "available": true,
+   "barcode": null,
+   "brand": null,
+   "brandCode": "brand-v",
+   "brandName": "Бренд 3",
+   "categoryCode": "Master - Sanitary napkins",
+   "categoryPathCodes": [
+    "Master - Sanitary napkins",
+    "Sanitary napkins",
+    "Body care",
+    "Beauty care"
+   ],
+   "cityPrices": [
+    {
+     "cityId": "710000000",
+     "oldprice": 0,
+     "value": 931
+    }
+   ],
+   "clusterId": null,
+   "colourCode": null,
+   "contentRating": {
+    "improvementAllowed": false,
+    "masterSku": "900000002",
+    "ratingEvaluation": "EXCELLENT"
+   },
+   "deliveryOptions": null,
+   "editionDeadline": null,
+   "familyId": "[Master - Sanitary napkins][brand-v]{00000000-0000-4000-8000-000000000001#900000000000000000000001}{прокладки}",
+   "fileId": "MANUAL_CHANGES",
+   "images": [
+    "p91/p01/90000001.png",
+    "p91/p02/90000002.jpg",
+    "p91/p03/90000003.png"
+   ],
+   "imagesV2": [
+    {
+     "aiGenerated": false,
+     "generated": null,
+     "infographics": false,
+     "large": "https://resources.cdn-kaspi.kz/img/m/p/p91/p01/90000001.png?format=gallery-large",
+     "location": "p91/p01/90000001.png",
+     "locationLp": {
+      "ru": "p91/p01/90000001.png"
+     },
+     "medium": "https://resources.cdn-kaspi.kz/img/m/p/p91/p01/90000001.png?format=gallery-medium",
+     "small": "https://resources.cdn-kaspi.kz/img/m/p/p91/p01/90000001.png?format=gallery-small",
+     "verified": false,
+     "visualType": null
+    },
+    {
+     "aiGenerated": false,
+     "generated": null,
+     "infographics": false,
+     "large": "https://resources.cdn-kaspi.kz/img/m/p/p91/p02/90000002.jpg?format=gallery-large",
+     "location": "p91/p02/90000002.jpg",
+     "locationLp": {
+      "ru": "p91/p02/90000002.jpg"
+     },
+     "medium": "https://resources.cdn-kaspi.kz/img/m/p/p91/p02/90000002.jpg?format=gallery-medium",
+     "small": "https://resources.cdn-kaspi.kz/img/m/p/p91/p02/90000002.jpg?format=gallery-small",
+     "verified": null,
+     "visualType": null
+    },
+    {
+     "aiGenerated": false,
+     "generated": null,
+     "infographics": false,
+     "large": "https://resources.cdn-kaspi.kz/img/m/p/p91/p03/90000003.png?format=gallery-large",
+     "location": "p91/p03/90000003.png",
+     "locationLp": {
+      "ru": "p91/p03/90000003.png"
+     },
+     "medium": "https://resources.cdn-kaspi.kz/img/m/p/p91/p03/90000003.png?format=gallery-medium",
+     "small": "https://resources.cdn-kaspi.kz/img/m/p/p91/p03/90000003.png?format=gallery-small",
+     "verified": null,
+     "visualType": null
+    }
+   ],
+   "improvementAllowed": false,
+   "masterCategory": "Master - Sanitary napkins",
+   "masterName": "Тестовый товар 3, карточка",
+   "masterSku": "900000002",
+   "masterTitle": "Тестовый товар 3, карточка",
+   "matchesLastBatch": false,
+   "maxDiscount": 0,
+   "maxPrice": 931,
+   "merchantUid": "90100003",
+   "mergeDeadline": null,
+   "minPrice": 931,
+   "model": null,
+   "modification": false,
+   "offerError": null,
+   "offerId": "9f0000000000000000000002",
+   "offerSource": "MANUAL_OFFER",
+   "oldMaxPrice": null,
+   "oldMinPrice": null,
+   "oldprice": 0,
+   "points": [
+    "PP1",
+    "PP3"
+   ],
+   "price": 0,
+   "priority": 0,
+   "rangePrice": {
+    "MAX": 931,
+    "MIN": 931
+   },
+   "reindexReason": null,
+   "selectedCity": null,
+   "shopLink": "/p/brand-v-prokladki-nochnye-6-sht-900000002/",
+   "skipDistinctCheck": false,
+   "sku": "900000002_900000022",
+   "stocks": [
+    {
+     "cityId": "710000000",
+     "stockLevel": {
+      "90100003_PP1": {
+       "enabled": false,
+       "value": null
+      },
+      "90100003_PP3": {
+       "enabled": false,
+       "value": null
+      }
+     }
+    }
+   ],
+   "title": null,
+   "unitCode": "pieces",
+   "updatedAt": "2026-11-12T18:32:01.39062462Z"
+  },
+  {
+   "_distinctVersion": 63,
+   "_version": null,
+   "allCityPrices": {
+    "111010000": {
+     "discount": 0,
+     "oldPrice": null,
+     "price": 632
+    },
+    "111037100": {
+     "discount": 0,
+     "oldPrice": null,
+     "price": 632
+    }
+   },
+   "anyKaspiDelivery": true,
+   "anyKaspiDeliveryExpress": false,
+   "anyKaspiDeliveryLocal": false,
+   "anyMerchantDelivery": false,
+   "anyPickup": true,
+   "applicationCode": null,
+   "archivedAt": null,
+   "attributes": [],
+   "availabilities": [
+    {
+     "available": "yes",
+     "preOrder": 0,
+     "stockCount": null,
+     "stockSpecified": false,
+     "storeId": "90100003_PP1"
+    },
+    {
+     "available": "yes",
+     "preOrder": 0,
+     "stockCount": null,
+     "stockSpecified": false,
+     "storeId": "90100003_PP3"
+    }
+   ],
+   "available": true,
+   "barcode": null,
+   "brand": null,
+   "brandCode": "brand-g",
+   "brandName": "Бренд 4",
+   "categoryCode": "Master - Sanitary napkins",
+   "categoryPathCodes": [
+    "Master - Sanitary napkins",
+    "Sanitary napkins",
+    "Body care",
+    "Beauty care"
+   ],
+   "cityPrices": [
+    {
+     "cityId": "710000000",
+     "oldprice": 0,
+     "value": 632
+    }
+   ],
+   "clusterId": null,
+   "colourCode": null,
+   "contentRating": {
+    "improvementAllowed": false,
+    "masterSku": "900000004",
+    "ratingEvaluation": "EXCELLENT"
+   },
+   "deliveryOptions": null,
+   "editionDeadline": null,
+   "familyId": "[Master - Sanitary napkins][brand-g]{прокладки}{ночные}",
+   "fileId": "MANUAL_CHANGES",
+   "images": [
+    "p92/p01/90000011.bin",
+    "p92/p02/90000012.png",
+    "p92/p03/90000013.png"
+   ],
+   "imagesV2": [
+    {
+     "aiGenerated": true,
+     "generated": null,
+     "infographics": false,
+     "large": "https://resources.cdn-kaspi.kz/img/m/p/p92/p01/90000011.bin?format=gallery-large",
+     "location": "p92/p01/90000011.bin",
+     "locationLp": {
+      "ru": "p92/p01/90000011.bin"
+     },
+     "medium": "https://resources.cdn-kaspi.kz/img/m/p/p92/p01/90000011.bin?format=gallery-medium",
+     "small": "https://resources.cdn-kaspi.kz/img/m/p/p92/p01/90000011.bin?format=gallery-small",
+     "verified": false,
+     "visualType": "studio_background"
+    },
+    {
+     "aiGenerated": false,
+     "generated": null,
+     "infographics": false,
+     "large": "https://resources.cdn-kaspi.kz/img/m/p/p92/p02/90000012.png?format=gallery-large",
+     "location": "p92/p02/90000012.png",
+     "locationLp": {
+      "ru": "p92/p02/90000012.png"
+     },
+     "medium": "https://resources.cdn-kaspi.kz/img/m/p/p92/p02/90000012.png?format=gallery-medium",
+     "small": "https://resources.cdn-kaspi.kz/img/m/p/p92/p02/90000012.png?format=gallery-small",
+     "verified": null,
+     "visualType": null
+    },
+    {
+     "aiGenerated": false,
+     "generated": null,
+     "infographics": false,
+     "large": "https://resources.cdn-kaspi.kz/img/m/p/p92/p03/90000013.png?format=gallery-large",
+     "location": "p92/p03/90000013.png",
+     "locationLp": {
+      "ru": "p92/p03/90000013.png"
+     },
+     "medium": "https://resources.cdn-kaspi.kz/img/m/p/p92/p03/90000013.png?format=gallery-medium",
+     "small": "https://resources.cdn-kaspi.kz/img/m/p/p92/p03/90000013.png?format=gallery-small",
+     "verified": null,
+     "visualType": null
+    }
+   ],
+   "improvementAllowed": false,
+   "masterCategory": "Master - Sanitary napkins",
+   "masterName": "Тестовый товар 4, карточка",
+   "masterSku": "900000004",
+   "masterTitle": "Тестовый товар 4, карточка",
+   "matchesLastBatch": false,
+   "maxDiscount": 0,
+   "maxPrice": 632,
+   "merchantUid": "90100003",
+   "mergeDeadline": null,
+   "minPrice": 632,
+   "model": "Тестовый товар 4",
+   "modification": false,
+   "offerError": null,
+   "offerId": "9f0000000000000000000003",
+   "offerSource": "MANUAL_OFFER",
+   "oldMaxPrice": null,
+   "oldMinPrice": null,
+   "oldprice": 0,
+   "points": [
+    "PP1",
+    "PP3"
+   ],
+   "price": 0,
+   "priority": 0,
+   "rangePrice": {
+    "MAX": 632,
+    "MIN": 632
+   },
+   "reindexReason": null,
+   "selectedCity": null,
+   "shopLink": "/p/brand-g-prokladki-nochnye-7-sht-900000004/",
+   "skipDistinctCheck": false,
+   "sku": "900000004_900000023",
+   "stocks": [
+    {
+     "cityId": "710000000",
+     "stockLevel": {
+      "90100003_PP1": {
+       "enabled": false,
+       "value": null
+      },
+      "90100003_PP3": {
+       "enabled": false,
+       "value": null
+      }
+     }
+    }
+   ],
+   "title": "Тестовый товар 4",
+   "unitCode": "pieces",
+   "updatedAt": "2026-11-12T18:32:00.257835974Z"
+  }
+ ],
+ "total": 998
+}

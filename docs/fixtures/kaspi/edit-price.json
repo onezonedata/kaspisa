@@ -1,0 +1,23 @@
+{
+  "available": true,
+  "sku": "900000005_900000024",
+  "masterSku": "900000005",
+  "minPrice": 2654,
+  "maxPrice": 2654,
+  "title": "Тестовый товар 1",
+  "masterTitle": "Тестовый товар 1, карточка",
+  "brand": "Бренд 1",
+  "cities": [
+    {
+      "id": "710000000",
+      "name": "Астана",
+      "price": 2654,
+      "points": [
+        {"id": "90100003_PP3", "address": " улица Тестовая,  1", "displayName": "PP3", "stock": 0},
+        {"id": "90100003_PP1", "address": null, "displayName": "PP1", "stock": 9}
+      ]
+    }
+  ],
+  "image": "https://resources.cdn-kaspi.kz/img/m/p/p90/p90/900000001.jpeg?format=gallery-small",
+  "unitCode": "pieces"
+}
