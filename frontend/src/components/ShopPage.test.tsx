@@ -5,7 +5,7 @@ import { t } from "@/i18n";
 import { makeShop } from "@/test/fixtures";
 import { jsonResponse, stubFetch } from "@/test/http";
 import { ShopPage } from "./ShopPage";
-import { ShellShopProvider } from "./shell-shop";
+import { ShellShopProvider, ShellUserProvider } from "./shell-shop";
 
 const router = vi.hoisted(() => ({ replace: vi.fn(), push: vi.fn() }));
 vi.mock("next/navigation", () => ({
@@ -222,5 +222,26 @@ describe("ShopPage: каркас (Т19)", () => {
     await vi.waitFor(() =>
       expect(update).toHaveBeenLastCalledWith(expect.objectContaining({ bot_mode: "dry_run" })),
     );
+  });
+});
+
+describe("ShopPage: удаление магазина только администратору (Т40)", () => {
+  it("обычный пользователь не видит кнопку, администратор видит", async () => {
+    fetchMock.mockImplementation(() => Promise.resolve(jsonResponse(200, halted())));
+    const staff = render(
+      <ShellUserProvider isAdmin={false}>
+        <ShopPage />
+      </ShellUserProvider>,
+    );
+    await screen.findByText(t.connectionState.connected);
+    expect(screen.queryByRole("button", { name: t.ui.deleteShop })).toBeNull();
+    staff.unmount();
+
+    render(
+      <ShellUserProvider isAdmin>
+        <ShopPage />
+      </ShellUserProvider>,
+    );
+    expect(await screen.findByRole("button", { name: t.ui.deleteShop })).toBeInTheDocument();
   });
 });

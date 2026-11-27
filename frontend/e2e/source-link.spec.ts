@@ -5,14 +5,14 @@ import { t } from "../src/i18n";
 import { SOURCE_HREF } from "../src/lib/source";
 import { FakeApi } from "./fake-api";
 
-const HREF = "https://github.com/onezonedata/kaspisa/tree/v0.1.0";
+const HREF = "https://github.com/onezonedata/kaspisa/tree/v0.2.0";
 
 async function expectFooter(page: import("@playwright/test").Page) {
   const link = page.getByRole("link", { name: t.ui.sourceCode });
   await expect(link).toBeVisible();
   await expect(link).toHaveAttribute("href", SOURCE_HREF);
   await expect(link).toHaveAttribute("href", HREF);
-  await expect(page.locator("footer:visible")).toContainText("0.1.0");
+  await expect(page.locator("footer:visible")).toContainText("0.2.0");
 }
 
 test("ссылка на исходный код видна на каждой странице", async ({ page, baseURL }) => {

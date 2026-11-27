@@ -27,6 +27,8 @@ function detail(event: OwnerEvent): string {
       new: event.new_value ?? DASH,
     });
   }
+  if (event.kind === "user_added") return event.new_value ?? DASH;
+  if (event.kind === "user_removed") return event.old_value ?? DASH;
   return DASH;
 }
 
@@ -51,6 +53,7 @@ export function EventsPage() {
                 <th>{t.ui.colEventTime}</th>
                 <th>{t.ui.colEventKind}</th>
                 <th>{t.ui.colEventDetail}</th>
+                <th>{t.ui.colEventUser}</th>
                 <th>{t.ui.colEventIp}</th>
               </tr>
             </thead>
@@ -60,6 +63,7 @@ export function EventsPage() {
                   <td>{formatDateTime(event.created_at)}</td>
                   <td>{codeText(t.ownerEvent, event.kind)}</td>
                   <td className="wrap">{detail(event)}</td>
+                  <td className="wrap">{event.user_email}</td>
                   <td className="sku">{event.ip}</td>
                 </tr>
               ))}

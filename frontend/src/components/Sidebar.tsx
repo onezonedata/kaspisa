@@ -8,7 +8,7 @@ import { t } from "@/i18n";
 import { applySidebar, isSidebarCollapsed } from "@/lib/prefs";
 import { ErrorMessage } from "./ErrorMessage";
 import { Icon } from "./icons";
-import { NAV_ITEMS, activeNavId } from "./nav";
+import { activeNavId, navItemsFor } from "./nav";
 import { ThemeToggle } from "./ThemeToggle";
 import type { ApiError } from "@/api/client";
 
@@ -21,6 +21,7 @@ export function shopMode(shop: Shop): { mode: "off" | "dry_run" | "live" | "halt
 
 interface SidebarProps {
   email: string;
+  isAdmin: boolean;
   shop: Shop | null;
   pathname: string;
   leaving: boolean;
@@ -37,6 +38,7 @@ interface SidebarProps {
 /** Боковое меню: название, магазин с режимом бота, разделы, тема, выход. Один экземпляр в DOM. */
 export function Sidebar({
   email,
+  isAdmin,
   shop,
   pathname,
   leaving,
@@ -50,7 +52,8 @@ export function Sidebar({
   // Начальное значение — из атрибута <html>, который ставит встроенный скрипт до отрисовки.
   const [collapsed, setCollapsed] = useState(isSidebarCollapsed);
   const shopId = shop?.id ?? null;
-  const active = activeNavId(pathname, shopId);
+  const items = navItemsFor(isAdmin);
+  const active = activeNavId(pathname, shopId, items);
   const state = shop ? shopMode(shop) : null;
 
   function toggleCollapsed() {
@@ -79,7 +82,7 @@ export function Sidebar({
       ) : null}
       <nav aria-label={t.ui.navLabel}>
         <ul className="side-nav">
-          {NAV_ITEMS.map((item) => (
+          {items.map((item) => (
             <li key={item.id}>
               <Link
                 href={item.href(shopId)}

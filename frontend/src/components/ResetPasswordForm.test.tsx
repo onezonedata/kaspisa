@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { t } from "@/i18n";
@@ -19,6 +20,39 @@ function submit(token = "123456", password = "new-password-1") {
   fireEvent.click(screen.getByRole("button", { name: t.ui.resetAction }));
 }
 
+describe("ResetPasswordForm: токен из фрагмента (Т34)", () => {
+  afterEach(() => window.history.replaceState(null, "", "/"));
+
+  it("подставляет токен и убирает фрагмент из адреса", () => {
+    window.history.replaceState(null, "", "/reset-password#token=abc");
+    const replace = vi.spyOn(window.history, "replaceState");
+    render(<ResetPasswordForm />);
+    expect(screen.getByLabelText(t.ui.resetToken)).toHaveValue("abc");
+    expect(replace).toHaveBeenCalledWith(null, "", "/reset-password");
+    expect(window.location.hash).toBe("");
+    replace.mockRestore();
+  });
+
+  it("под StrictMode (эффект дважды) токен остаётся", () => {
+    window.history.replaceState(null, "", "/reset-password#token=abc");
+    render(
+      <StrictMode>
+        <ResetPasswordForm />
+      </StrictMode>,
+    );
+    expect(screen.getByLabelText(t.ui.resetToken)).toHaveValue("abc");
+    expect(window.location.hash).toBe("");
+  });
+
+  it("без фрагмента поле пустое", () => {
+    const replace = vi.spyOn(window.history, "replaceState");
+    render(<ResetPasswordForm />);
+    expect(screen.getByLabelText(t.ui.resetToken)).toHaveValue("");
+    expect(replace).not.toHaveBeenCalled();
+    replace.mockRestore();
+  });
+});
+
 describe("ResetPasswordForm (Т15)", () => {
   it("отправляет код и новый пароль, затем зовёт войти", async () => {
     fetchMock.mockResolvedValue(emptyResponse(204));
@@ -30,10 +64,10 @@ describe("ResetPasswordForm (Т15)", () => {
     expect(screen.getByRole("link", { name: t.ui.toLogin })).toHaveAttribute("href", "/login");
   });
 
-  it("поля: код — numeric one-time-code, пароль — new-password", () => {
+  it("поля: код — one-time-code без numeric, пароль — new-password", () => {
     render(<ResetPasswordForm />);
     const token = screen.getByLabelText(t.ui.resetToken);
-    expect(token).toHaveAttribute("inputmode", "numeric");
+    expect(token).not.toHaveAttribute("inputmode");
     expect(token).toHaveAttribute("autocomplete", "one-time-code");
     expect(screen.getByLabelText(t.ui.newPassword)).toHaveAttribute("autocomplete", "new-password");
   });

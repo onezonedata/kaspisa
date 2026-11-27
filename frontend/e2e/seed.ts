@@ -83,7 +83,7 @@ export function demoProducts(count = 12): Product[] {
 
 /** Кабинет без входа через форму: пользователь есть, магазин подключён, товары и журнал заполнены. */
 export function seedCabinet(fake: FakeApi, productCount = 12): string {
-  fake.user = { id: "00000000-0000-4000-8000-000000000001", email: DEMO_EMAIL };
+  fake.user = { id: "00000000-0000-4000-8000-000000000001", email: DEMO_EMAIL, is_admin: true };
   fake.account = { email: DEMO_EMAIL, password: DEMO_PASSWORD };
   fake.shops = [
     makeShop({

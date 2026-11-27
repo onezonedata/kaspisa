@@ -18,3 +18,12 @@ export function ShellShopProvider({ value, children }: { value: ShellShop; child
 }
 
 export const useShellShop = () => useContext(ShellShopContext);
+
+/** Роль текущего пользователя; без провайдера — обычный пользователь (запрет безопаснее разрешения). */
+const ShellUserContext = createContext(false);
+
+export function ShellUserProvider({ isAdmin, children }: { isAdmin: boolean; children: ReactNode }) {
+  return <ShellUserContext value={isAdmin}>{children}</ShellUserContext>;
+}
+
+export const useIsAdmin = () => useContext(ShellUserContext);

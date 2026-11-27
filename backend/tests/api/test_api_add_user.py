@@ -53,6 +53,7 @@ async def test_add_user_joins_given_account(
     await signed_in(deps, "b@example.com")
     shop_a = await seed_shop(deps, raw_engine, await tenant_of(raw_engine, "a@example.com"))
     shop_b = await seed_shop(deps, raw_engine, await tenant_of(raw_engine, "b@example.com"))
+    events_before = await sql_scalar(raw_engine, "SELECT count(*) FROM owner_event")
 
     code = await asyncio.to_thread(
         main, ["B@example.com", "Staff@Example.com"], _settings(api_database_url)
@@ -70,6 +71,14 @@ async def test_add_user_joins_given_account(
     assert await tenant_of(raw_engine, "staff@example.com") == await tenant_of(
         raw_engine, "b@example.com"
     )
+    # Т26: команда создаёт обычного пользователя и событий в журнал не пишет
+    assert (
+        await sql_scalar(
+            raw_engine, "SELECT is_admin FROM app_user WHERE email = :e", e="staff@example.com"
+        )
+        is False
+    )
+    assert await sql_scalar(raw_engine, "SELECT count(*) FROM owner_event") == events_before
     client = make_api(deps)
     credentials = {"email": "staff@example.com", "password": SERVICE_PASSWORD}
     assert (await client.post("/api/auth/login", json=credentials)).status_code == 401

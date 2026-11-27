@@ -24,3 +24,5 @@ export type TelegramSettings = S["TelegramSettingsOut"];
 export type TelegramSettingsIn = S["TelegramSettingsIn"];
 export type ProductPage = S["ProductPage"];
 export type PriceChangePage = S["PriceChangePage"];
+export type UserAdmin = S["UserAdminOut"];
+export type UserAdded = S["UserAddedOut"];

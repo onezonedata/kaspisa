@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
 
 import { t } from "@/i18n";
-import { NAV_ITEMS, activeNavId } from "./nav";
+import { NAV_ITEMS, activeNavId, navItemsFor } from "./nav";
+
+describe("navItemsFor (Т28)", () => {
+  it("обычному пользователю пункта «Пользователи» нет, администратору — есть", () => {
+    expect(navItemsFor(false).map((i) => i.id)).not.toContain("users");
+    expect(navItemsFor(true).map((i) => i.id)).toContain("users");
+    expect(navItemsFor(true).find((i) => i.id === "users")?.label).toBe(t.ui.usersLink);
+  });
+
+  it("/users подсвечивает пункт только в списке администратора", () => {
+    expect(activeNavId("/users", null, navItemsFor(true))).toBe("users");
+    expect(activeNavId("/users", null, navItemsFor(false))).toBeNull();
+  });
+});
 
 describe("NAV_ITEMS (Т7)", () => {
   it("пункты и подписи из словаря, в заданном порядке", () => {
@@ -11,6 +24,7 @@ describe("NAV_ITEMS (Т7)", () => {
       "events",
       "notifications",
       "settings",
+      "users",
     ]);
     expect(NAV_ITEMS.map((i) => i.label)).toEqual([
       t.ui.productsLink,
@@ -18,6 +32,7 @@ describe("NAV_ITEMS (Т7)", () => {
       t.ui.eventsLink,
       t.ui.notificationsLink,
       t.ui.navShopSettings,
+      t.ui.usersLink,
     ]);
   });
 });
@@ -30,6 +45,7 @@ describe("NAV_ITEMS: адреса (Т8)", () => {
       "/events",
       "/notifications",
       "/shops/s1",
+      "/users",
     ]);
   });
 
@@ -40,6 +56,7 @@ describe("NAV_ITEMS: адреса (Т8)", () => {
       "/events",
       "/notifications",
       "/shops",
+      "/users",
     ]);
   });
 });

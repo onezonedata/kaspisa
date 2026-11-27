@@ -91,7 +91,7 @@ CHECKED: dict[type, set[str]] = {
         "due_for_verification",
         "next_verify_time",
     },
-    UserRepository: {"add", "get", "list"},
+    UserRepository: {"add", "get", "list", "delete_member"},
     OwnerEventRepository: {"add", "list_recent"},
     TelegramRepository: {"get", "get_target", "save", "delete"},  # Т5: ниже
 }
@@ -191,6 +191,9 @@ async def test_user_repository_isolation(database: Database, two_tenants: TwoTen
     async with database.tenant(b.tenant_id) as scope:
         assert await scope.users.get(a.user_id) is None
         assert a.user_id not in [u.id for u in await scope.users.list()]
+        assert await scope.users.delete_member(a.user_id) is False
+    async with database.tenant(a.tenant_id) as scope:
+        assert await scope.users.get(a.user_id) is not None
 
 
 async def test_owner_event_repository_isolation(

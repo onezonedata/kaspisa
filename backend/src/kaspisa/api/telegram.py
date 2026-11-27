@@ -285,5 +285,19 @@ def text_settings_changed() -> str:
     )
 
 
+def text_user_added(email: str) -> str:
+    return (
+        f"kaspisa: в учётную запись добавлен пользователь {_cut(_clean(email), 100)}. "
+        f"{_NOT_YOU_SESSIONS} и смените пароль."
+    )
+
+
+def text_user_removed(email: str) -> str:
+    return (
+        f"kaspisa: из учётной записи удалён пользователь {_cut(_clean(email), 100)}. "
+        f"{_NOT_YOU_SESSIONS} и смените пароль."
+    )
+
+
 def text_settings_deleted() -> str:
     return f"kaspisa: уведомления в Telegram отключены. {_NOT_YOU_SESSIONS} и смените пароль."

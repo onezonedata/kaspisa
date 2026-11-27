@@ -79,6 +79,8 @@ EXPECTED_PATHS: dict[str, set[str]] = {
     "/api/version": {"GET"},
     "/api/notifications/telegram": {"GET", "PUT", "DELETE"},
     "/api/notifications/telegram/test": {"POST"},
+    "/api/users": {"GET", "POST"},
+    "/api/users/{user_id}": {"DELETE"},
 }
 
 TELEGRAM_TOKEN = "123456789:" + "A" * 35
@@ -125,6 +127,13 @@ async def test_secrets_are_in_no_response_or_log(
         "/api/auth/confirm-password",
         json={"password": SERVICE_PASSWORD},
     )
+    await call(client, "GET", "/api/users", "/api/users")
+    invited = await call(
+        client, "POST", "/api/users", "/api/users", json={"email": "staff@example.com"}
+    )
+    assert invited.status_code == 201
+    staff_id = invited.json()["user"]["id"]
+    await call(client, "DELETE", "/api/users/{user_id}", f"/api/users/{staff_id}")
     shops = "/api/shops"
     added = await call(
         client, "POST", shops, shops, json={"login": KASPI_LOGIN, "password": KASPI_PASSWORD}

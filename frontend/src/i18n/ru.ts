@@ -48,6 +48,9 @@ export const ru: Messages = {
     kaspi_busy: "Очередь запросов к Kaspi занята, повторите позже",
     kaspi_unavailable: "Kaspi не ответил, повторите позже",
     price_read_in_progress: "Уже читаются цены другого товара, подождите несколько секунд",
+    admin_required: "Страница доступна только администратору",
+    email_taken: "Этот e-mail уже зарегистрирован",
+    cannot_delete_self: "Нельзя удалить себя",
   },
   fields: {
     "body.email": "e-mail",
@@ -176,6 +179,8 @@ export const ru: Messages = {
     password_confirm_failed: "Неверный повторный пароль",
     bot_mode_changed: "Смена режима бота",
     bounds_changed: "Смена границ цены",
+    user_added: "Добавлен пользователь",
+    user_removed: "Удалён пользователь",
   },
   reason: {
     undercut_first: "ниже первого места",
@@ -307,6 +312,7 @@ export const ru: Messages = {
     colEventKind: "Событие",
     colEventDetail: "Подробности",
     colEventIp: "Адрес",
+    colEventUser: "Кто",
     eventModeChange: "{old} → {new}",
     eventBoundsChange: "товар {sku}: {old} → {new}",
     save: "Сохранить",
@@ -459,5 +465,26 @@ export const ru: Messages = {
     tgTestSent: "Сообщение отправлено",
     tgDisable: "Отключить уведомления",
     tgDisabling: "Отключаем…",
+    tgAdminOnly: "Изменить уведомления может только администратор",
+
+    // Пользователи (этап 19)
+    usersLink: "Пользователи",
+    usersTitle: "Пользователи",
+    userAdminBadge: "администратор",
+    colUserEmail: "E-mail",
+    colUserRole: "Роль",
+    colUserCreated: "Добавлен",
+    userDelete: "Удалить",
+    userDeleting: "Удаляем…",
+    userConfirmDelete: "Удалить {email}? Все его входы будут завершены",
+    userAdd: "Добавить",
+    userAdding: "Добавляем…",
+    userAddTitle: "Добавить пользователя",
+    userLinkTitle: "Ссылка для задания пароля",
+    userLinkHint:
+      "Ссылка показана один раз и действует 1 час. Передайте её сотруднику лично; не пересылайте в общий чат",
+    userLinkCopy: "Скопировать",
+    userLinkCopied: "Скопировано",
+    userLinkDone: "Готово",
   },
 };

@@ -82,6 +82,20 @@ class UserRepository:
         )
         return (await self._session.execute(stmt)).scalars().all()
 
+    async def delete_member(self, user_id: uuid.UUID) -> bool:
+        """Удаляет обычного пользователя арендатора; администратора и чужих не трогает.
+
+        Условие `NOT is_admin` стоит в самом `DELETE`: «администратор есть всегда» держится
+        без отдельной проверки и без гонок. `False` - строки нет, она чужая или администратор.
+        """
+        stmt = (
+            delete(User)
+            .where(User.tenant_id == self._tenant_id, User.id == user_id, not_(User.is_admin))
+            .returning(User.id)
+        )
+        result = await run_guarded(self._session, lambda: self._session.execute(stmt))
+        return result.scalar_one_or_none() is not None
+
 
 # Причина остановки, которую ставит серия ошибок входа (запрещает и загрузку каталога).
 LOGIN_HALT_REASON = "login_errors"
@@ -1064,12 +1078,22 @@ class OwnerEventRepository:
         old_value: str | None = None,
         new_value: str | None = None,
     ) -> OwnerEvent:
-        """`tenant_id` ставит репозиторий. `shop_id` обязателен для смены режима и границ."""
+        """`tenant_id` ставит репозиторий. `shop_id` обязателен для смены режима и границ.
+
+        Адрес автора (`user_email`) записывается снимком подзапросом в том же `INSERT`; автор из
+        другого арендатора или несуществующий даёт NULL, и вставку отвергает `NOT NULL`.
+        """
         if (kind in _SHOP_EVENTS) != (shop_id is not None):
             raise ValueError(f"shop_id и вид события {kind.value} не согласованы")
+        author_email = (
+            select(User.email)
+            .where(User.tenant_id == self._tenant_id, User.id == user_id)
+            .scalar_subquery()
+        )
         event = OwnerEvent(
             tenant_id=self._tenant_id,
             user_id=user_id,
+            user_email=author_email,
             kind=kind.value,
             ip=ip,
             shop_id=shop_id,
@@ -1079,6 +1103,8 @@ class OwnerEventRepository:
         )
         self._session.add(event)
         await run_guarded(self._session, self._session.flush)
+        # Значение подзапроса после вставки не загружено: читаем сразу, вне сессии оно недоступно.
+        await self._session.refresh(event, ["user_email"])
         return event
 
     async def list_recent(self, limit: int) -> Sequence[OwnerEvent]:

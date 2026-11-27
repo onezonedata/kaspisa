@@ -189,6 +189,37 @@ async def test_api_log_has_no_secrets_when_password_is_rejected(
         assert secret not in text, secret
 
 
+async def test_reset_token_of_added_user_is_shown_once_and_not_logged(
+    deps: ApiDeps, raw_engine: AsyncEngine
+) -> None:
+    """Т24: токен из `POST /api/users` не в логах, уведомлении, `repr`, списке и журнале."""
+    from api_notify_testing import notifier_of, owner, sent_messages, url_of
+
+    from kaspisa.api.schemas import UserAddedOut
+
+    client, _ = await owner(deps, raw_engine, "admin@example.com", confirmed=True)
+    with _stream() as out, respx.mock(assert_all_called=False) as mock:
+        mock.post(url_of("123456789:" + "A" * 35)).respond(200)
+        added = await client.post("/api/users", json={"email": "new@example.com"})
+        await notifier_of(deps).drain()
+        log_text = out.getvalue()
+        messages = sent_messages(mock)
+    assert added.status_code == 201
+    token = added.json()["reset_token"]
+    assert token not in log_text
+    assert [token in m.text for m in messages] == [False]
+    assert token not in repr(UserAddedOut.model_validate(added.json()))
+    second = await client.post("/api/users", json={"email": "other@example.com"})
+    assert second.status_code == 201
+    for path in ("/api/users", "/api/events"):
+        assert token not in (await client.get(path)).text
+    assert token not in second.text
+    dump = await sql_scalar(
+        raw_engine, "SELECT string_agg(CAST(e AS text), '|') FROM owner_event e"
+    )
+    assert token not in dump
+
+
 async def test_confirm_password_is_not_logged_or_stored(
     deps: ApiDeps, raw_engine: AsyncEngine
 ) -> None:

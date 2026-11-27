@@ -22,8 +22,28 @@ const event = (o: Partial<OwnerEvent>): OwnerEvent => ({
   sku: null,
   old_value: null,
   new_value: null,
+  user_email: "boss@example.kz",
   created_at: "2026-11-19T10:00:00Z",
   ...o,
+});
+
+describe("EventsPage: пользователи и «Кто» (Т36)", () => {
+  it("user_added — адрес из new_value, user_removed — из old_value; колонка «Кто»", async () => {
+    fetchMock.mockResolvedValue(
+      jsonResponse(200, [
+        event({ id: 2, kind: "user_removed", old_value: "gone@example.kz", user_email: "other@example.kz" }),
+        event({ id: 1, kind: "user_added", new_value: "added@example.kz" }),
+      ]),
+    );
+    render(<EventsPage />);
+    expect(await screen.findByText(t.ownerEvent.user_added)).toBeInTheDocument();
+    expect(screen.getByText(t.ownerEvent.user_removed)).toBeInTheDocument();
+    expect(screen.getByText("added@example.kz")).toBeInTheDocument();
+    expect(screen.getByText("gone@example.kz")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: t.ui.colEventUser })).toBeInTheDocument();
+    expect(screen.getByText("boss@example.kz")).toBeInTheDocument();
+    expect(screen.getByText("other@example.kz")).toBeInTheDocument();
+  });
 });
 
 describe("EventsPage (Т32)", () => {

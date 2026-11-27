@@ -13,6 +13,8 @@ import type {
   Shop,
   SyncResult,
   User,
+  UserAdded,
+  UserAdmin,
   VersionOut,
 } from "../src/api/types";
 import { makePendingWrite, makePriceChange, makeProduct, makeShop } from "../src/test/fixtures";
@@ -49,6 +51,10 @@ export class FakeApi {
   user: User | null = null;
   /** Учётная запись, заведённая заранее: войти в неё можно через POST /auth/login. */
   account: { email: string; password: string } | null = null;
+  /** Все пользователи установки (GET /api/users). */
+  users: UserAdmin[] = [];
+  /** Окно повторного пароля открыто (сбрасывается после одного изменения). */
+  passwordConfirmed = false;
   shops: Shop[] = [];
   products: Product[] = [];
   priceChanges: PriceChange[] = [];
@@ -90,12 +96,12 @@ export class FakeApi {
     }
 
     if (method === "POST" && path === "/auth/register") {
-      // Как сервер после первой учётной записи (ADR 0027).
+      // Как сервер после первой учётной записи (ADR 0027): она администратор.
       if (this.account !== null || this.user !== null) {
         return this.error(route, 403, "registration_closed");
       }
       const sent = request.postDataJSON() as { email: string };
-      this.user = { id: "00000000-0000-4000-8000-000000000001", email: sent.email };
+      this.user = { id: "00000000-0000-4000-8000-000000000001", email: sent.email, is_admin: true };
       return json(route, 201, this.user);
     }
     if (method === "POST" && path === "/auth/login") {
@@ -103,9 +109,22 @@ export class FakeApi {
       if (this.account?.email !== sent.email || this.account.password !== sent.password) {
         return this.error(route, 401, "invalid_credentials");
       }
-      this.user = { id: "00000000-0000-4000-8000-000000000001", email: sent.email };
+      this.user = { id: "00000000-0000-4000-8000-000000000001", email: sent.email, is_admin: true };
+      this.users = [
+        {
+          ...this.user,
+          created_at: "2026-11-01T10:00:00Z",
+        },
+      ];
       return json(route, 200, this.user);
     }
+    if (method === "POST" && path === "/auth/confirm-password") {
+      const sent = request.postDataJSON() as { password: string };
+      if (this.account?.password !== sent.password) return this.error(route, 403, "password_invalid");
+      this.passwordConfirmed = true;
+      return route.fulfill({ status: 204 });
+    }
+    if (path === "/users" || path.startsWith("/users/")) return this.userRoute(route, method, path);
     if (method === "GET" && path === "/auth/me") {
       return this.user ? json(route, 200, this.user) : this.error(route, 401, "unauthenticated");
     }
@@ -130,6 +149,38 @@ export class FakeApi {
     const shop = this.shopRoute(route, method, path);
     if (shop) return shop;
 
+    this.unhandled += 1;
+    return this.error(route, 500, "internal_error");
+  }
+
+  /** Пользователи установки: только администратор, изменения — после повторного пароля (одно действие). */
+  private userRoute(route: Route, method: string, path: string) {
+    if (!this.user?.is_admin) return this.error(route, 403, "admin_required");
+    if (method === "GET" && path === "/users") return json(route, 200, this.users);
+    if (!this.passwordConfirmed) return this.error(route, 403, "password_required");
+    if (method === "POST" && path === "/users") {
+      const sent = route.request().postDataJSON() as { email: string };
+      if (this.users.some((u) => u.email === sent.email)) return this.error(route, 409, "email_taken");
+      this.passwordConfirmed = false;
+      const user: UserAdmin = {
+        id: `00000000-0000-4000-8000-0000000002${String(this.users.length).padStart(2, "0")}`,
+        email: sent.email,
+        is_admin: false,
+        created_at: "2026-11-27T10:00:00Z",
+      };
+      this.users.push(user);
+      const body: UserAdded = { user, reset_token: "fake-reset-token", expires_in_seconds: 3600 };
+      return json(route, 201, body);
+    }
+    const one = /^\/users\/([^/]+)$/.exec(path);
+    if (method === "DELETE" && one) {
+      const target = this.users.find((u) => u.id === one[1]);
+      if (!target) return this.error(route, 404, "not_found");
+      if (target.id === this.user.id) return this.error(route, 409, "cannot_delete_self");
+      this.passwordConfirmed = false;
+      this.users = this.users.filter((u) => u !== target);
+      return route.fulfill({ status: 204 });
+    }
     this.unhandled += 1;
     return this.error(route, 500, "internal_error");
   }

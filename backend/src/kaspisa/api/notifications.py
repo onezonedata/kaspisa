@@ -19,7 +19,7 @@ from typing import Annotated
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field, StringConstraints
 
-from kaspisa.api.deps import ApiDeps, CurrentPrincipal, Deps
+from kaspisa.api.deps import AdminPrincipal, ApiDeps, CurrentPrincipal, Deps
 from kaspisa.api.errors import ApiError
 from kaspisa.api.guard import ensure_password_confirmed
 from kaspisa.api.schemas import _In
@@ -201,7 +201,7 @@ async def get_settings(principal: CurrentPrincipal, deps: Deps) -> TelegramSetti
 
 @router.put("")
 async def save_settings(
-    body: TelegramSettingsIn, request: Request, principal: CurrentPrincipal, deps: Deps
+    body: TelegramSettingsIn, request: Request, principal: AdminPrincipal, deps: Deps
 ) -> TelegramSettingsOut:
     token = Secret(body.token) if body.token is not None else None
     old: TelegramTarget | None = None
@@ -220,7 +220,7 @@ async def save_settings(
 
 
 @router.delete("", status_code=204)
-async def delete_settings(request: Request, principal: CurrentPrincipal, deps: Deps) -> Response:
+async def delete_settings(request: Request, principal: AdminPrincipal, deps: Deps) -> Response:
     async with deps.database.tenant(principal.tenant_id) as scope:
         if await scope.telegram.get() is None:
             return Response(status_code=204)

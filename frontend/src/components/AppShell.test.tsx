@@ -41,7 +41,7 @@ function signedIn() {
   fetchMock.mockImplementation((url: string) =>
     Promise.resolve(
       url === "/api/auth/me"
-        ? jsonResponse(200, { id: "u1", email: "seller@b.kz" })
+        ? jsonResponse(200, { id: "u1", email: "seller@b.kz", is_admin: true })
         : url === "/api/shops"
           ? jsonResponse(200, [])
           : emptyResponse(204),
@@ -53,7 +53,7 @@ function signedIn() {
 function signedInShops(shops: () => Promise<Response>) {
   fetchMock.mockImplementation((url: string) =>
     url === "/api/auth/me"
-      ? Promise.resolve(jsonResponse(200, { id: "u1", email: "seller@b.kz" }))
+      ? Promise.resolve(jsonResponse(200, { id: "u1", email: "seller@b.kz", is_admin: true }))
       : url === "/api/shops"
         ? shops()
         : Promise.resolve(emptyResponse(204)),
@@ -120,7 +120,7 @@ describe("AppShell (Т16)", () => {
   function signedInWith(logoutAllResponse: () => Promise<Response>) {
     fetchMock.mockImplementation((url: string) =>
       url === "/api/auth/me"
-        ? Promise.resolve(jsonResponse(200, { id: "u1", email: "seller@b.kz" }))
+        ? Promise.resolve(jsonResponse(200, { id: "u1", email: "seller@b.kz", is_admin: true }))
         : url === "/api/version"
           ? Promise.resolve(jsonResponse(200, noUpdate))
           : url === "/api/shops"
@@ -169,7 +169,7 @@ describe("AppShell (Т16)", () => {
     fetchMock.mockImplementation((url: string) =>
       Promise.resolve(
         url === "/api/auth/me"
-          ? jsonResponse(200, { id: "u1", email: "seller@b.kz" })
+          ? jsonResponse(200, { id: "u1", email: "seller@b.kz", is_admin: true })
           : url === "/api/shops"
             ? jsonResponse(200, [])
             : jsonResponse(200, {
@@ -205,6 +205,34 @@ describe("AppShell (Т16)", () => {
     await screen.findByRole("alert");
     fireEvent.click(screen.getByRole("button", { name: t.ui.logoutAll }));
     await vi.waitFor(() => expect(screen.queryByRole("alert")).toBeNull());
+  });
+});
+
+describe("AppShell: пункт «Пользователи» (Т29)", () => {
+  function signedInAs(isAdmin: boolean) {
+    fetchMock.mockImplementation((url: string) =>
+      Promise.resolve(
+        url === "/api/auth/me"
+          ? jsonResponse(200, { id: "u1", email: "seller@b.kz", is_admin: isAdmin })
+          : url === "/api/shops"
+            ? jsonResponse(200, [])
+            : emptyResponse(204),
+      ),
+    );
+  }
+
+  it("у обычного пользователя ссылки нет", async () => {
+    signedInAs(false);
+    render(<AppShell>х</AppShell>);
+    await screen.findByText("seller@b.kz");
+    expect(screen.queryByRole("link", { name: t.ui.usersLink })).toBeNull();
+    expect(screen.getByRole("link", { name: t.ui.eventsLink })).toBeInTheDocument();
+  });
+
+  it("у администратора ссылка ведёт на /users", async () => {
+    signedInAs(true);
+    render(<AppShell>х</AppShell>);
+    expect(await screen.findByRole("link", { name: t.ui.usersLink })).toHaveAttribute("href", "/users");
   });
 });
 

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fill, t } from "@/i18n";
 import { emptyResponse, jsonResponse, sentBody, stubFetch } from "@/test/http";
 import { NotificationsPage } from "./NotificationsPage";
+import { ShellUserProvider } from "./shell-shop";
 
 const URL = "/api/notifications/telegram";
 const TOKEN = "123456:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef0123";
@@ -47,7 +48,11 @@ function callIndexes(method: string): number[] {
 
 async function loaded(initial = settings) {
   settings = initial;
-  render(<NotificationsPage />);
+  render(
+    <ShellUserProvider isAdmin>
+      <NotificationsPage />
+    </ShellUserProvider>,
+  );
   await screen.findByLabelText(t.ui.tgTokenLabel);
   await waitFor(() => expect(screen.queryByText(t.ui.loading)).not.toBeInTheDocument());
 }
@@ -69,6 +74,30 @@ describe("NotificationsPage: атрибуты полей против автоз
     const loginLike = /(^|[-_])(id|login|user|username|e?mail)$/i;
     expect(chat.getAttribute("name")).not.toMatch(loginLike);
     expect(chat.getAttribute("id")).not.toMatch(loginLike);
+  });
+});
+
+describe("NotificationsPage: обычный пользователь (Т40)", () => {
+  it("настройки только для чтения: нет формы, «Отключить» и сохранения; «Проверить» есть", async () => {
+    settings = { token_set: true, chat_id: "42" };
+    render(
+      <ShellUserProvider isAdmin={false}>
+        <NotificationsPage />
+      </ShellUserProvider>,
+    );
+    expect(await screen.findByText(fill(t.ui.tgStatusOn, { chat_id: "42" }))).toBeInTheDocument();
+    expect(screen.getByText(t.ui.tgAdminOnly)).toBeInTheDocument();
+    expect(screen.queryByLabelText(t.ui.tgTokenLabel)).toBeNull();
+    expect(screen.queryByLabelText(t.ui.tgChatLabel)).toBeNull();
+    expect(screen.queryByRole("button", { name: t.ui.tgDisable })).toBeNull();
+    expect(screen.queryByRole("button", { name: t.ui.save })).toBeNull();
+    expect(button(t.ui.tgTest)).toBeEnabled();
+  });
+
+  it("без провайдера роли страница тоже только для чтения", async () => {
+    render(<NotificationsPage />);
+    await screen.findByText(t.ui.tgStatusOff);
+    expect(screen.queryByLabelText(t.ui.tgTokenLabel)).toBeNull();
   });
 });
 
@@ -235,7 +264,9 @@ describe("NotificationsPage: поля (Т43)", () => {
   it("скрытая страница (Activity) не хранит введённый токен", async () => {
     const tree = (mode: "visible" | "hidden") => (
       <Activity mode={mode}>
-        <NotificationsPage />
+        <ShellUserProvider isAdmin>
+          <NotificationsPage />
+        </ShellUserProvider>
       </Activity>
     );
     const { rerender } = render(tree("visible"));

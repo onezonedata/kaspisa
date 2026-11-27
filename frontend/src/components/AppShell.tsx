@@ -9,7 +9,7 @@ import { t } from "@/i18n";
 import { useLoad } from "@/lib/use-load";
 import { ErrorMessage } from "./ErrorMessage";
 import { Icon } from "./icons";
-import { ShellShopProvider, type ShellShop } from "./shell-shop";
+import { ShellShopProvider, ShellUserProvider, type ShellShop } from "./shell-shop";
 import { Sidebar, shopMode } from "./Sidebar";
 import { SourceFooter } from "./SourceFooter";
 import { UpdateBanner } from "./UpdateBanner";
@@ -167,6 +167,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside id="app-sidebar" className="sidebar">
         <Sidebar
           email={user.email}
+          isAdmin={user.is_admin}
           shop={shop}
           pathname={pathname}
           leaving={leaving}
@@ -180,7 +181,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
       <div className="shell-content" inert={drawerOpen}>
         <UpdateBanner />
-        <ShellShopProvider value={shellShop}>{children}</ShellShopProvider>
+        <ShellUserProvider isAdmin={user.is_admin}>
+          <ShellShopProvider value={shellShop}>{children}</ShellShopProvider>
+        </ShellUserProvider>
         <SourceFooter />
       </div>
     </div>

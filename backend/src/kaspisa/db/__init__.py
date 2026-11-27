@@ -6,6 +6,7 @@ from kaspisa.db.errors import (
     ConstraintViolationError,
     EmailTakenError,
     NotFoundError,
+    RowGoneError,
     ShopAlreadyConnectedError,
     StaleStateError,
 )
@@ -76,6 +77,7 @@ __all__ = [
     "PriceWriteStatus",
     "Product",
     "ProductRepository",
+    "RowGoneError",
     "SecretsReport",
     "Shop",
     "ShopAlreadyConnectedError",

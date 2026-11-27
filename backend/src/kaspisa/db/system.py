@@ -222,7 +222,7 @@ class SystemScope:
         tenant = Tenant(name=address)
         self._session.add(tenant)
         await run_guarded(self._session, self._session.flush)
-        user = User(tenant_id=tenant.id, email=address, password_hash=password_hash)
+        user = User(tenant_id=tenant.id, email=address, password_hash=password_hash, is_admin=True)
         self._session.add(user)
         await run_guarded(self._session, self._session.flush)
         await run_guarded(self._session, self._session.commit)

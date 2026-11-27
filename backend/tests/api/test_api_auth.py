@@ -22,6 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from kaspisa.api import ApiDeps
 from kaspisa.api.reset_token import issue_reset_token, main
 from kaspisa.config import Settings
+from kaspisa.db.repositories import UserRepository
 
 __all__ = [
     "api_cipher",
@@ -48,7 +49,7 @@ async def test_register_sets_cookie_and_opens_session(deps: ApiDeps) -> None:
     assert response.status_code == 201
     body = response.json()
     assert body["email"] == "a@example.com"
-    assert set(body) == {"id", "email"}
+    assert set(body) == {"id", "email", "is_admin"}
     cookie = response.headers["set-cookie"]
     assert "kaspisa_session=" in cookie
     for attribute in ("HttpOnly", "Secure", "Max-Age=2592000", "Path=/"):
@@ -236,6 +237,26 @@ async def test_ttl_and_no_raw_tokens_in_redis(deps: ApiDeps, redis_prefix: str) 
     for key in await _keys(deps, f"{redis_prefix}:api:*"):
         assert token not in key
         assert reset not in key
+
+
+async def test_database_outage_in_current_principal_is_503_not_401(
+    deps: ApiDeps, redis_prefix: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Т22: база недоступна при проверке пользователя - 503; сессия и cookie не тронуты."""
+    client = await signed_in(deps)
+    token = client.cookies["kaspisa_session"]
+
+    async def unreachable(*_: object) -> None:
+        raise ConnectionRefusedError
+
+    monkeypatch.setattr(UserRepository, "get", unreachable)
+    response = await client.get("/api/shops")
+
+    assert response.status_code == 503
+    assert response.json()["code"] == "service_unavailable"
+    assert "kaspisa_session" not in response.headers.get("set-cookie", "")
+    key = f"{redis_prefix}:api:sess:{hashlib.sha256(token.encode()).hexdigest()}"
+    assert await deps.redis.exists(key)
 
 
 async def test_closed_registration_makes_no_tenant(deps: ApiDeps, raw_engine: AsyncEngine) -> None:

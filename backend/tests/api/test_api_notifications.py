@@ -344,3 +344,23 @@ async def test_no_message_when_old_token_unreadable(deps: ApiDeps, raw_engine: A
         await notifier_of(deps).drain()
         assert sent_messages(mock) == []
     assert await stored(deps, tenant) == (T2, "43")
+
+
+def test_user_event_texts_are_clean_and_have_no_token() -> None:
+    """Т25: адрес очищается и обрезается до 100 символов; в тексте есть путь к отзыву сессий."""
+    from kaspisa.api.telegram import _NOT_YOU_SESSIONS, text_user_added, text_user_removed
+
+    messy = "a\n  b\x00c@example.com"
+    long_email = "x" * 150 + "@example.com"
+    for build, phrase in (
+        (text_user_added, "добавлен пользователь"),
+        (text_user_removed, "удалён пользователь"),
+    ):
+        text = build(messy)
+        assert "a b c@example.com" in text
+        assert "\n" not in text
+        assert phrase in text
+        assert _NOT_YOU_SESSIONS in text
+        cut = build(long_email)
+        assert "x" * 99 + "…" in cut
+        assert "x" * 100 not in cut

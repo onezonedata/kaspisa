@@ -6,6 +6,7 @@ from collections.abc import Awaitable, Callable
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.exc import StaleDataError
 
 
 class NotFoundError(Exception):
@@ -14,6 +15,10 @@ class NotFoundError(Exception):
 
 class StaleStateError(Exception):
     """connection_version не совпала: запись сделал устаревший писатель."""
+
+
+class RowGoneError(Exception):
+    """Строку, которую правили, удалили между чтением и записью (параллельное удаление)."""
 
 
 class ConstraintViolationError(Exception):
@@ -59,12 +64,18 @@ async def run_guarded[T](session: AsyncSession, operation: Callable[[], Awaitabl
     """
     name: str | None = None
     violated = False
+    gone = False
     try:
         return await operation()
     except IntegrityError as exc:
         violated = True
         name = _constraint_name(exc)
         await session.rollback()
+    except StaleDataError:
+        gone = True
+        await session.rollback()
+    if gone:
+        raise RowGoneError
     if violated:
         raise _error_for(name)
     raise AssertionError  # недостижимо

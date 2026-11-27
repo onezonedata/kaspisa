@@ -16,7 +16,7 @@ import { ErrorMessage } from "./ErrorMessage";
 import { HaltBanner } from "./HaltBanner";
 import { RefreshButton } from "./RefreshButton";
 import { ShopSettingsForm } from "./ShopSettingsForm";
-import { useShellShop } from "./shell-shop";
+import { useIsAdmin, useShellShop } from "./shell-shop";
 import { WriteBanner } from "./WriteBanner";
 
 export function ShopPage() {
@@ -24,6 +24,7 @@ export function ShopPage() {
   const load = useCallback(() => getShop(shopId), [shopId]);
   const { data: shop, error, loading, reload, setData } = useLoad(load);
   const { shop: menuShop, update } = useShellShop();
+  const isAdmin = useIsAdmin();
   // Меню ведёт к товарам и журналу только своего (единственного) магазина.
   const showLinks = menuShop?.id !== shopId;
 
@@ -55,7 +56,7 @@ export function ShopPage() {
           </div>
           <ShopSettingsForm shop={shop} onShop={setData} />
           <CredentialsForm shop={shop} onShop={setData} />
-          <DeleteShopButton shopId={shop.id} />
+          {isAdmin ? <DeleteShopButton shopId={shop.id} /> : null}
         </>
       ) : null}
     </main>

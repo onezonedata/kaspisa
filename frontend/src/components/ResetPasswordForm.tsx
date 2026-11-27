@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import { ApiError, resetPassword } from "@/api/client";
 import { t } from "@/i18n";
@@ -17,6 +17,23 @@ export function ResetPasswordForm() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [passwordError, setPasswordError] = useState(false);
+
+  // Токен приходит во фрагменте адреса: он не уходит на сервер. Читается один раз и стирается из адреса;
+  // повторный запуск эффекта (StrictMode) фрагмента уже не находит и поле не трогает.
+  useEffect(() => {
+    const match = /^#token=(.+)$/.exec(window.location.hash);
+    if (match === null) return;
+    let value = match[1];
+    try {
+      value = decodeURIComponent(value);
+    } catch {
+      // оставляем как есть
+    }
+    // Синхронизация с внешним состоянием (адресная строка), а не производное значение.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setToken(value);
+    window.history.replaceState(null, "", window.location.pathname);
+  }, []);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -55,7 +72,6 @@ export function ResetPasswordForm() {
         {t.ui.resetToken}
         <input
           name="token"
-          inputMode="numeric"
           autoComplete="one-time-code"
           required
           value={token}

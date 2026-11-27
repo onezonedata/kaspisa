@@ -15,6 +15,7 @@ import { useLoad } from "@/lib/use-load";
 import { BusyButton } from "./BusyButton";
 import { ErrorMessage } from "./ErrorMessage";
 import { PasswordConfirm } from "./PasswordConfirm";
+import { useIsAdmin } from "./shell-shop";
 
 /** Действие, отложенное до повторного ввода пароля (ADR 0024). */
 type Pending = { kind: "save"; body: TelegramSettingsIn } | { kind: "delete" };
@@ -96,6 +97,7 @@ function TelegramForm({
     if (ask !== null) void run(ask);
   }
 
+  const isAdmin = useIsAdmin();
   const configured = settings.token_set;
   const working = busy !== null;
   return (
@@ -105,34 +107,38 @@ function TelegramForm({
           ? fill(t.ui.tgStatusOn, { chat_id: settings.chat_id ?? "" })
           : t.ui.tgStatusOff}
       </p>
-      <form method="post" onSubmit={onSubmit}>
-        <label>
-          {t.ui.tgTokenLabel}
-          <input
-            type="password"
-            name="telegram-token"
-            id="telegram-token"
-            autoComplete="new-password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-          />
-        </label>
-        {configured ? <small>{t.ui.tgTokenKeepHint}</small> : null}
-        <label>
-          {t.ui.tgChatLabel}
-          <input
-            name="telegram-chat"
-            id="telegram-chat"
-            autoComplete="off"
-            value={chatId}
-            onChange={(e) => setChatId(e.target.value)}
-          />
-        </label>
-        <BusyButton type="submit" busy={busy === "save"} busyText={t.ui.saving} disabled={working}>
-          {t.ui.save}
-        </BusyButton>
-        {configured ? <small>{t.ui.tgOldChatHint}</small> : null}
-      </form>
+      {isAdmin ? (
+        <form method="post" onSubmit={onSubmit}>
+          <label>
+            {t.ui.tgTokenLabel}
+            <input
+              type="password"
+              name="telegram-token"
+              id="telegram-token"
+              autoComplete="new-password"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+            />
+          </label>
+          {configured ? <small>{t.ui.tgTokenKeepHint}</small> : null}
+          <label>
+            {t.ui.tgChatLabel}
+            <input
+              name="telegram-chat"
+              id="telegram-chat"
+              autoComplete="off"
+              value={chatId}
+              onChange={(e) => setChatId(e.target.value)}
+            />
+          </label>
+          <BusyButton type="submit" busy={busy === "save"} busyText={t.ui.saving} disabled={working}>
+            {t.ui.save}
+          </BusyButton>
+          {configured ? <small>{t.ui.tgOldChatHint}</small> : null}
+        </form>
+      ) : (
+        <p>{t.ui.tgAdminOnly}</p>
+      )}
       <div className="actions">
         <BusyButton
           type="button"
@@ -143,7 +149,7 @@ function TelegramForm({
         >
           {t.ui.tgTest}
         </BusyButton>
-        {configured ? (
+        {configured && isAdmin ? (
           <BusyButton
             type="button"
             busy={busy === "delete"}

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 from importlib.metadata import version as app_version
 from typing import TYPE_CHECKING, Annotated, Protocol
@@ -48,6 +48,8 @@ REGISTER_IP_WINDOW_SECONDS = 3600
 RESET_IP_LIMIT = 20
 RESET_IP_WINDOW_SECONDS = 900
 RESET_TOKEN_TTL_SECONDS = 3600
+USERS_ADD_LIMIT = 20  # добавлений пользователей в час на администратора (ADR 0039)
+USERS_ADD_WINDOW_SECONDS = 3600
 # Повторный ввод пароля при опасной правке (ADR 0024): окно сессии и лимит неверных попыток.
 PASSWORD_CONFIRM_TTL_SECONDS = 600
 PASSWORD_CONFIRM_FAIL_LIMIT = 5
@@ -129,6 +131,8 @@ class ApiDeps:
 class Principal:
     user_id: uuid.UUID
     tenant_id: TenantId
+    # Роль приносит `current_principal` из базы; значение по умолчанию запрещает, а не разрешает.
+    is_admin: bool = False
 
 
 def set_session_cookie(
@@ -161,14 +165,31 @@ async def current_principal(request: Request, deps: Deps) -> Principal:
     """Пользователь из сессии; арендатор берётся только отсюда, не из запроса."""
     token = request.cookies.get(SESSION_COOKIE)
     principal, renewed = await deps.state.get_session(token) if token else (None, None)
-    if principal is None:
+    if principal is None or not token:
         raise ApiError(401, "unauthenticated")
-    if renewed is not None and token:
+    # Пользователь и роль - из базы: сессия удалённого пользователя не действует, даже если
+    # отзыв в Redis не прошёл. Ошибка базы - не 401: интерфейс не должен уводить на вход.
+    async with deps.database.tenant(principal.tenant_id) as scope:
+        user = await scope.users.get(principal.user_id)
+    if user is None:
+        await deps.state.delete_session(token)
+        raise ApiError(401, "unauthenticated")
+    if renewed is not None:
         # Заголовок добавляет `GuardMiddleware`: он работает и для маршрутов, возвращающих Response.
         carrier = Response()
         set_session_cookie(carrier, deps.cookie_secure, token, renewed)
         setattr(request.state, RENEWED_COOKIE_STATE, carrier.headers["set-cookie"])
-    return principal
+    return replace(principal, is_admin=user.is_admin)
 
 
 CurrentPrincipal = Annotated[Principal, Depends(current_principal)]
+
+
+async def require_admin(principal: CurrentPrincipal) -> Principal:
+    """Только администратор: 403 `admin_required` (не `unauthenticated`: тот уводит на вход)."""
+    if not principal.is_admin:
+        raise ApiError(403, "admin_required")
+    return principal
+
+
+AdminPrincipal = Annotated[Principal, Depends(require_admin)]

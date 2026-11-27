@@ -13,7 +13,7 @@ describe("корневой макет (Т13)", () => {
       </RootLayout>,
     );
     expect(html).toContain("<p>x</p>");
-    expect(html).not.toContain("https://github.com/onezonedata/kaspisa/tree/v0.1.0");
+    expect(html).not.toContain("https://github.com/onezonedata/kaspisa/tree/");
   });
 
   it("ставит тему до отрисовки и не тянет внешние шрифты (Т2)", () => {

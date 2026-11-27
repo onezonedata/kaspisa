@@ -8,7 +8,7 @@ import { FakeApi } from "./fake-api";
 
 test("узнать цены: чтение, карточка, повтор отклонён", async ({ page, baseURL }) => {
   const fake = new FakeApi();
-  fake.user = { id: "00000000-0000-4000-8000-000000000001", email: "seller@example.kz" };
+  fake.user = { id: "00000000-0000-4000-8000-000000000001", email: "seller@example.kz", is_admin: true };
   const shop = makeShop({ connection_state: "connected", merchant_uid: "30000001", city_id: "750000000" });
   fake.shops = [shop];
   fake.products = [makeProduct({ id: 1, shop_id: shop.id, sku: "SKU-1", title: "Товар 1" })];

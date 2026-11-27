@@ -33,7 +33,7 @@ from kaspisa.api.passwords import (
 )
 from kaspisa.api.schemas import LoginIn, PasswordConfirmIn, PasswordResetIn, RegisterIn, UserOut
 from kaspisa.api.telegram import text_new_device
-from kaspisa.db import EmailTakenError, OwnerEventKind, TenantId
+from kaspisa.db import EmailTakenError, OwnerEventKind, RowGoneError, TenantId
 
 router = APIRouter(prefix="/api/auth")
 
@@ -81,7 +81,7 @@ async def register(body: RegisterIn, request: Request, response: Response, deps:
     _set_cookie(response, deps, token)
     # Устройство регистрации становится известным; уведомления нет (настроек ещё нет).
     await _issue_device(request, response, deps, user.id, known_only=False)
-    return UserOut(id=user.id, email=user.email)
+    return UserOut(id=user.id, email=user.email, is_admin=user.is_admin)
 
 
 def _clean_browser(user_agent: str | None) -> str:
@@ -169,7 +169,7 @@ async def login(body: LoginIn, request: Request, response: Response, deps: Deps)
     if not known:
         browser = _clean_browser(request.headers.get("user-agent"))
         notify_owner(deps, TenantId(user.tenant_id), text_new_device(ip, browser))
-    return UserOut(id=user.id, email=user.email)
+    return UserOut(id=user.id, email=user.email, is_admin=user.is_admin)
 
 
 def _logged_out(deps: ApiDeps) -> Response:
@@ -204,7 +204,7 @@ async def me(principal: CurrentPrincipal, deps: Deps) -> UserOut:
         user = await scope.users.get(principal.user_id)
     if user is None:
         raise ApiError(401, "unauthenticated")
-    return UserOut(id=user.id, email=user.email)
+    return UserOut(id=user.id, email=user.email, is_admin=user.is_admin)
 
 
 @router.post("/confirm-password", status_code=204)
@@ -261,6 +261,10 @@ async def password_reset(body: PasswordResetIn, request: Request, deps: Deps) ->
         if user is None:
             raise ApiError(400, "invalid_token")
         user.password_hash = new_hash
-        await scope.commit()
+        try:
+            await scope.commit()
+        except RowGoneError:
+            # Пользователя удалили между чтением и записью: токен недействителен.
+            raise ApiError(400, "invalid_token") from None
     await deps.state.revoke_user_sessions(user.id)
     return Response(status_code=204)

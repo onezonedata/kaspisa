@@ -57,6 +57,8 @@ class OwnerEventKind(StrEnum):
     PASSWORD_CONFIRM_FAILED = "password_confirm_failed"  # noqa: S105 (код события, не пароль)
     BOT_MODE_CHANGED = "bot_mode_changed"
     BOUNDS_CHANGED = "bounds_changed"
+    USER_ADDED = "user_added"
+    USER_REMOVED = "user_removed"
 
 
 class PriceChangeResult(StrEnum):
@@ -112,6 +114,13 @@ class User(Base):
         CheckConstraint("email = lower(email)", name="email_lowercase"),
         UniqueConstraint("email", name="uq_app_user_email"),
         Index("ix_app_user_tenant_id", "tenant_id"),
+        # Администратор в арендаторе не больше одного (ADR 0039).
+        Index(
+            "uq_app_user_tenant_id_admin",
+            "tenant_id",
+            unique=True,
+            postgresql_where=text("is_admin"),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
@@ -120,6 +129,8 @@ class User(Base):
     )
     email: Mapped[str] = mapped_column(Text)
     password_hash: Mapped[str] = mapped_column(Text)
+    # Роль ставит только `register_first`; API смены роли нет (ADR 0039).
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     def __repr__(self) -> str:
@@ -460,9 +471,11 @@ class OwnerEvent(Base):
     tenant_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("tenant.id", ondelete="CASCADE", name="fk_owner_event_tenant_id_tenant")
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("app_user.id", ondelete="CASCADE", name="fk_owner_event_user_id_app_user")
+    # После удаления пользователя `user_id` обнуляется, автор остаётся по снимку адреса.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("app_user.id", ondelete="SET NULL", name="fk_owner_event_user_id_app_user")
     )
+    user_email: Mapped[str] = mapped_column(Text)
     kind: Mapped[str] = mapped_column(Text)
     ip: Mapped[str] = mapped_column(Text)
     shop_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)

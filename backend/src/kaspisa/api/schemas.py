@@ -77,6 +77,32 @@ class PasswordConfirmIn(_In):
 class UserOut(BaseModel):
     id: uuid.UUID
     email: str
+    is_admin: bool
+
+
+class UserAddIn(_In):
+    """Добавление пользователя администратором (ADR 0039)."""
+
+    email: str
+
+    _email = field_validator("email", mode="before")(_normalize_email)
+
+
+class UserAdminOut(BaseModel):
+    """Строка списка пользователей: без пароля и признаков входа."""
+
+    id: uuid.UUID
+    email: str
+    is_admin: bool
+    created_at: datetime
+
+
+class UserAddedOut(BaseModel):
+    """Ответ на добавление: токен задания пароля показывается один раз."""
+
+    user: UserAdminOut
+    reset_token: Annotated[str, Field(repr=False)]
+    expires_in_seconds: int
 
 
 class OwnerEventOut(BaseModel):
@@ -84,6 +110,7 @@ class OwnerEventOut(BaseModel):
 
     id: int
     kind: OwnerEventKind
+    user_email: str
     ip: str
     shop_id: uuid.UUID | None
     sku: str | None

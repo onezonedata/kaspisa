@@ -69,9 +69,11 @@ def test_tailscale_is_optional_and_not_logged_in() -> None:
 
 def test_workflows_exist_with_required_parts() -> None:
     ci = (WORKFLOWS / "ci.yml").read_text(encoding="utf-8")
-    needles = ("pull_request", "workflow_call", "postgres:17", "redis:7", "make lint", "make test")
+    needles = ("workflow_call", "postgres:17", "redis:7", "make lint", "make test")
     for needle in needles:
         assert needle in ci, needle
+    # Заявки в зеркало не принимаются: CI не запускается на коде чужого pull request.
+    assert "pull_request" not in ci
     release = (WORKFLOWS / "release.yml").read_text(encoding="utf-8")
     for needle in (
         "check-release-tag.sh",

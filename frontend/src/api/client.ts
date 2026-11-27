@@ -16,6 +16,8 @@ import type {
   TelegramSettings,
   TelegramSettingsIn,
   User,
+  UserAdded,
+  UserAdmin,
   VersionOut,
 } from "./types";
 
@@ -147,6 +149,11 @@ export const resetPassword =(token: string, newPassword: string) =>
   request<void>("POST", `${AUTH}/password-reset`, { token, new_password: newPassword });
 
 export const listEvents = () => request<OwnerEvent[]>("GET", "/api/events");
+
+export const listUsers = () => request<UserAdmin[]>("GET", "/api/users");
+export const addUser = (email: string) => request<UserAdded>("POST", "/api/users", { email });
+export const deleteUser = (id: string) =>
+  request<void>("DELETE", `/api/users/${encodeURIComponent(id)}`);
 
 export const listShops =() => request<Ok<"/api/shops", "get"> & Shop[]>("GET", "/api/shops");
 export const getShop = (id: string) => request<Shop>("GET", shopPath(id));

@@ -13,7 +13,17 @@ from redis.asyncio import Redis
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from kaspisa import __version__
-from kaspisa.api import auth, connect, events, journal, notifications, products, shops, version
+from kaspisa.api import (
+    auth,
+    connect,
+    events,
+    journal,
+    notifications,
+    products,
+    shops,
+    users,
+    version,
+)
 from kaspisa.api.catalog_state import ApiSyncLock
 from kaspisa.api.deps import RENEWED_COOKIE_STATE, ApiDeps, ApiSettings
 from kaspisa.api.errors import error_response, install_error_handlers
@@ -162,6 +172,7 @@ def create_app(deps: ApiDeps | None = None) -> FastAPI:
         journal.router,
         events.router,
         notifications.router,
+        users.router,
     ):
         app.include_router(router, responses=errors)
     app.include_router(version.router, responses=errors)

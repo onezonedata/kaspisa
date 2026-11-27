@@ -466,6 +466,41 @@ export interface paths {
         patch: operations["update_settings"];
         trace?: never;
     };
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Users */
+        get: operations["list_users"];
+        put?: never;
+        /** Add User */
+        post: operations["add_user"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete User */
+        delete: operations["delete_user"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/version": {
         parameters: {
             query?: never;
@@ -603,7 +638,7 @@ export interface components {
          * @description Вид события журнала действий владельца (ADR 0024).
          * @enum {string}
          */
-        OwnerEventKind: "login" | "password_confirm_failed" | "bot_mode_changed" | "bounds_changed";
+        OwnerEventKind: "login" | "password_confirm_failed" | "bot_mode_changed" | "bounds_changed" | "user_added" | "user_removed";
         /**
          * OwnerEventOut
          * @description Событие журнала действий владельца: без паролей, токенов и cookie.
@@ -627,6 +662,8 @@ export interface components {
             shop_id: string | null;
             /** Sku */
             sku: string | null;
+            /** User Email */
+            user_email: string;
         };
         /**
          * PasswordConfirmIn
@@ -934,6 +971,45 @@ export interface components {
             /** Token Set */
             token_set: boolean;
         };
+        /**
+         * UserAddIn
+         * @description Добавление пользователя администратором (ADR 0039).
+         */
+        UserAddIn: {
+            /** Email */
+            email: string;
+        };
+        /**
+         * UserAddedOut
+         * @description Ответ на добавление: токен задания пароля показывается один раз.
+         */
+        UserAddedOut: {
+            /** Expires In Seconds */
+            expires_in_seconds: number;
+            /** Reset Token */
+            reset_token: string;
+            user: components["schemas"]["UserAdminOut"];
+        };
+        /**
+         * UserAdminOut
+         * @description Строка списка пользователей: без пароля и признаков входа.
+         */
+        UserAdminOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Email */
+            email: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Admin */
+            is_admin: boolean;
+        };
         /** UserOut */
         UserOut: {
             /** Email */
@@ -943,6 +1019,8 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /** Is Admin */
+            is_admin: boolean;
         };
         /** VersionOut */
         VersionOut: {
@@ -1929,6 +2007,97 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ShopOut"];
                 };
+            };
+            /** @description Ошибка */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    list_users: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdminOut"][];
+                };
+            };
+            /** @description Ошибка */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    add_user: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserAddIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAddedOut"];
+                };
+            };
+            /** @description Ошибка */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorOut"];
+                };
+            };
+        };
+    };
+    delete_user: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Ошибка */
             default: {

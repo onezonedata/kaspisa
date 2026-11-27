@@ -11,7 +11,13 @@ from fastapi import APIRouter, Request, Response
 from redis.exceptions import RedisError
 
 from kaspisa.api.auth import client_ip
-from kaspisa.api.deps import RESEND_INTERVAL_SECONDS, ApiDeps, CurrentPrincipal, Deps
+from kaspisa.api.deps import (
+    RESEND_INTERVAL_SECONDS,
+    AdminPrincipal,
+    ApiDeps,
+    CurrentPrincipal,
+    Deps,
+)
 from kaspisa.api.errors import ApiError
 from kaspisa.api.notifications import notify_owner
 from kaspisa.api.schemas import CatalogSummaryOut, ShopCredentialsIn, ShopOut, ShopSettingsIn
@@ -200,7 +206,7 @@ async def clear_halt(shop_id: uuid.UUID, principal: CurrentPrincipal, deps: Deps
 
 
 @router.delete("/{shop_id}", status_code=204)
-async def delete_shop(shop_id: uuid.UUID, principal: CurrentPrincipal, deps: Deps) -> Response:
+async def delete_shop(shop_id: uuid.UUID, principal: AdminPrincipal, deps: Deps) -> Response:
     async with deps.database.tenant(principal.tenant_id) as scope:
         await scope.shops.lock_for_write(shop_id)  # NotFoundError - 404
         await _ensure_no_open_writes(deps, scope, shop_id)

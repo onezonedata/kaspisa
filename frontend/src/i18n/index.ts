@@ -17,7 +17,7 @@ type ErrorCode =
   | "telegram_not_configured" | "telegram_token_required" | "telegram_token_invalid"
   | "telegram_chat_invalid" | "telegram_unavailable" | "telegram_token_unreadable"
   | "price_read_too_early" | "kaspi_busy" | "kaspi_unavailable"
-  | "price_read_in_progress";
+  | "price_read_in_progress" | "admin_required" | "email_taken" | "cannot_delete_self";
 
 type FieldPath =
   | "body.email" | "body.password" | "body.new_password" | "body.token" | "body.login"
@@ -148,6 +148,7 @@ export interface UiMessages {
   colEventKind: string;
   colEventDetail: string;
   colEventIp: string;
+  colEventUser: string;
   eventModeChange: string;
   eventBoundsChange: string;
   save: string;
@@ -295,6 +296,24 @@ export interface UiMessages {
   tgTestSent: string;
   tgDisable: string;
   tgDisabling: string;
+  tgAdminOnly: string;
+  usersLink: string;
+  usersTitle: string;
+  userAdminBadge: string;
+  colUserEmail: string;
+  colUserRole: string;
+  colUserCreated: string;
+  userDelete: string;
+  userDeleting: string;
+  userConfirmDelete: string;
+  userAdd: string;
+  userAdding: string;
+  userAddTitle: string;
+  userLinkTitle: string;
+  userLinkHint: string;
+  userLinkCopy: string;
+  userLinkCopied: string;
+  userLinkDone: string;
 }
 
 export interface Messages {

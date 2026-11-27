@@ -2,12 +2,14 @@
 import { t } from "@/i18n";
 import type { IconName } from "./icons";
 
-export type NavId = "products" | "journal" | "events" | "notifications" | "settings";
+export type NavId = "products" | "journal" | "events" | "notifications" | "settings" | "users";
 
 export interface NavItem {
   id: NavId;
   label: string;
   icon: IconName;
+  /** Пункт только для администратора: скрытие удобство, защищает API (403 `admin_required`). */
+  adminOnly?: true;
   /** Адрес пункта; `null` вместо магазина — его нет или их больше одного. */
   href: (shopId: string | null) => string;
 }
@@ -33,7 +35,12 @@ export const NAV_ITEMS: readonly NavItem[] = [
     icon: "settings",
     href: (s) => (s ? `/shops/${s}` : "/shops"),
   },
+  { id: "users", label: t.ui.usersLink, icon: "shield", href: () => "/users", adminOnly: true },
 ];
+
+/** Пункты меню для роли пользователя. */
+export const navItemsFor = (isAdmin: boolean): readonly NavItem[] =>
+  NAV_ITEMS.filter((item) => isAdmin || !item.adminOnly);
 
 const segments = (path: string) => path.split("/").filter((s) => s !== "");
 

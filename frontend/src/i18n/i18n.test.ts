@@ -123,7 +123,26 @@ describe("словарь этапа 8 (Т33)", () => {
     });
   });
 
-  it.each(["login", "password_confirm_failed", "bot_mode_changed", "bounds_changed"])(
+  it.each(["admin_required", "cannot_delete_self", "email_taken"])(
+    "есть текст ошибки %s (Т35)",
+    (code) => {
+      expect(errorText(new ApiError(403, code))).not.toBe(t.errors.unexpected_error);
+      expect(t.errors[code as keyof typeof t.errors]).not.toBe("");
+    },
+  );
+
+  it("admin_required — «Страница доступна только администратору»", () => {
+    expect(t.errors.admin_required).toBe("Страница доступна только администратору");
+  });
+
+  it.each([
+    "login",
+    "password_confirm_failed",
+    "bot_mode_changed",
+    "bounds_changed",
+    "user_added",
+    "user_removed",
+  ])(
     "есть текст события %s",
     (kind) => {
       expect(codeText(t.ownerEvent, kind)).not.toContain(t.common.unknownCode);

@@ -347,10 +347,34 @@ async def signed_in(
         await system.commit()
     async with deps.database.tenant(TenantId(tenant.id)) as scope:
         user = await scope.users.add(email=email, password_hash=hash_password(password))
+        # Один пользователь в своём арендаторе - его администратор (ADR 0039).
+        user.is_admin = True
         await scope.commit()
     token = await deps.state.create_session(user.id, TenantId(tenant.id))
     client.cookies.set(SESSION_COOKIE, token)
     return client
+
+
+async def signed_in_member(
+    deps: ApiDeps,
+    admin_email: str,
+    email: str = "staff@example.com",
+    password: str = SERVICE_PASSWORD,
+    *,
+    ip: str = "127.0.0.1",
+) -> tuple[httpx.AsyncClient, uuid.UUID]:
+    """Обычный (не администратор) пользователь в арендаторе `admin_email` и его клиент."""
+    client = make_api(deps, ip=ip)
+    async with deps.database.system() as system:
+        owner = await system.find_user_by_email(admin_email)
+    assert owner is not None
+    tenant = TenantId(owner.tenant_id)
+    async with deps.database.tenant(tenant) as scope:
+        user = await scope.users.add(email=email, password_hash=hash_password(password))
+        await scope.commit()
+    token = await deps.state.create_session(user.id, tenant)
+    client.cookies.set(SESSION_COOKIE, token)
+    return client, user.id
 
 
 # --- таблица маршрутов ---
@@ -415,6 +439,10 @@ ROUTES: list[RouteSpec] = [
     ),
     RouteSpec("DELETE", "/api/notifications/telegram"),
     RouteSpec("POST", "/api/notifications/telegram/test"),
+    # Пользователи (ADR 0039). `{user_id}` подставляется тестом.
+    RouteSpec("GET", "/api/users"),
+    RouteSpec("POST", "/api/users", {"email": "staff@example.com"}),
+    RouteSpec("DELETE", "/api/users/{user_id}"),
 ]
 
 

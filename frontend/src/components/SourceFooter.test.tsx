@@ -9,7 +9,7 @@ describe("SourceFooter (Т12)", () => {
     render(<SourceFooter />);
     const link = screen.getByRole("link", { name: "Исходный код" });
     expect(link).toHaveAttribute("href", `${SOURCE_REPO_URL}/tree/v${APP_VERSION}`);
-    expect(link).toHaveAttribute("href", "https://github.com/onezonedata/kaspisa/tree/v0.1.0");
+    expect(link).toHaveAttribute("href", "https://github.com/onezonedata/kaspisa/tree/v0.2.0");
     expect(SOURCE_HREF).toBe(link.getAttribute("href"));
     expect(link).toHaveAttribute("target", "_blank");
     expect(link.getAttribute("rel")).toContain("noopener");
@@ -18,6 +18,6 @@ describe("SourceFooter (Т12)", () => {
 
   it("в подвале есть версия", () => {
     const { container } = render(<SourceFooter />);
-    expect(container.querySelector("footer")?.textContent).toContain("0.1.0");
+    expect(container.querySelector("footer")?.textContent).toContain("0.2.0");
   });
 });
